@@ -12,19 +12,14 @@
 
 #include "header.h"
 
-//void	*philosopher(t_phil *ph)
-//{
-//	ph->id = 77;
-//	return (NULL);
-//}
-
-int	init_varbls(t_var *v, t_phil_state **s, t_phil **phil, void *mutex)
+int	init_varbls(t_var *v, t_phil_s **s, t_phil **phil, void *mutex)
 {
 	int	i;
 
 	if (pthread_mutex_init(mutex, NULL))
 	{
 		free_mem(v);
+		errmsg("pthread_mutex_init() error in init_varbls()", errno);
 		return (-1);
 	}
 	i = 0;
@@ -38,6 +33,7 @@ int	init_varbls(t_var *v, t_phil_state **s, t_phil **phil, void *mutex)
 		{
 			destroy_mutexes(phil, i);
 			free_mem(v);
+			errmsg("pthrd_mutex_init()2 error in init_varbls()", errno);
 			return (-2);
 		}
 		i++;
@@ -53,11 +49,17 @@ t_phil	**init_phil(t_var *v)
 
 	phil = my_malloc(v, sizeof(t_phil) * v->number_of_philosophers);
 	if (!phil)
+	{
+		errmsg("my_malloc() error in init_phil()", errno);
 		return (NULL);
+	}
 	memset(phil, 0, sizeof(t_phil) * v->number_of_philosophers);
 	phil_pt = my_malloc(v, sizeof(t_phil *) * (v->number_of_philosophers + 1));
 	if (!phil_pt)
+	{
+		errmsg("my_malloc()1 error in init_phil()", errno);
 		return (NULL);
+	}
 	i = v->number_of_philosophers;
 	phil_pt[i] = NULL;
 	while (i--)
@@ -65,19 +67,25 @@ t_phil	**init_phil(t_var *v)
 	return (phil_pt);
 }
 
-t_phil_state	**init_phil_state(t_var *v)
+t_phil_s	**init_phil_s(t_var *v)
 {
-	t_phil_state	*s;
-	t_phil_state	**s_pt;
+	t_phil_s	*s;
+	t_phil_s	**s_pt;
 	int				i;
 
-	s = my_malloc(v, sizeof(t_phil_state) * v->number_of_philosophers);
+	s = my_malloc(v, sizeof(t_phil_s) * v->number_of_philosophers);
 	if (!s)
+	{
+		errmsg("my_malloc() error in init_phil_s()", errno);
 		return (NULL);
+	}
 	memset(s, 0, sizeof(t_phil) * v->number_of_philosophers);
-	s_pt = my_malloc(v, sizeof(t_phil_state *) * (v->number_of_philosophers + 1));
+	s_pt = my_malloc(v, sizeof(t_phil_s *) * (v->number_of_philosophers + 1));
 	if (!s_pt)
+	{
+		errmsg("my_malloc()1 error in init_phil_s()", errno);
 		return (NULL);
+	}
 	i = v->number_of_philosophers;
 	s_pt[i] = NULL;
 	while (i--)
@@ -99,25 +107,31 @@ int	check_args(t_var *v)// The main() arguments will be added
 int main()
 {
 	t_var			v;
-	t_phil_state	**s;
+	t_phil_s	**s;
 	t_phil			**phil;
 	pthread_mutex_t	mutex;
 	pthread_t		*th;
 
 	if (check_args(&v))// The main() arguments will be added
-		return (err_msg("check_args() error in main()", errno));
-	s = init_phil_state(&v);
+		return (errmsg("check_args() error in main()", errno));
+	s = init_phil_s(&v);
 	if (!s)
-		return (err_msg("init_phil_state() error in main()", errno));
+		return (errno);
 	phil = init_phil(&v);
 	if (!phil)
-		return (err_msg("init_phil() error in main()", errno));
+		return (errno);
 	th = my_malloc(&v, sizeof(pthread_t) * v.number_of_philosophers);
 	if (!th)
-		return (err_msg("my_malloc() error in main()", errno));
+		return (errmsg("my_malloc() error in main()", errno));
 	if (init_varbls(&v, s, phil, &mutex))
-		return (err_msg("init_vars() error in main()", errno));
-	start_threads(&v, phil, th);
+		return (errno);
+	if (start_threads(&v, phil, th))
+		return (errno);
+
+	printf("From main()\n");//FIXME
+	sleep(20);
+	printf("From1 main()\n");
+	
 	destroy_mutexes(phil, v.number_of_philosophers);
 	free_mem(&v);
 	return (0);

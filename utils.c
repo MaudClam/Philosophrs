@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exit.c                                             :+:      :+:    :+:   */
+/*   utils.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mclam <mclam@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -12,7 +12,15 @@
 
 #include "header.h"
 
-int	err_msg(char *str, int err)
+int	errmsg_clrmem(char *str, int err, t_var *v, t_phil **phil)
+{
+	errmsg(str, err);
+	destroy_mutexes(phil, v->number_of_philosophers);
+	free_mem(v);
+	return (err);
+}
+
+int	errmsg(char *str, int err)
 {
 	ft_putstr_fd("Error: ", STDERR_FILENO);
 	ft_putstr_fd(str, STDERR_FILENO);
@@ -32,7 +40,7 @@ void	destroy_mutexes(t_phil **phil, int i)
 void	free_mem(t_var *v)
 {
 	int	i;
-	
+
 	i = 0;
 	while (i < v->count_of_mallocs)
 	{
