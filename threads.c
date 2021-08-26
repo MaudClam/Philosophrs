@@ -12,6 +12,32 @@
 
 #include "header.h"
 
+int	death_monitor(t_var *v, t_phil **phil)
+{
+	int		i;
+	
+	while (TRUE)
+	{
+		usleep(TIME_OF_DEATH_MONITORING);
+		i = 0;
+		while (i < v->number_of_philosophers)
+		{
+			pthread_mutex_lock(&phil[i]->mutex_t_eat);
+			if (get_time(phil[i]->time_start) - phil[i]->time_last_ate >= \
+																v->time_to_die)
+			{
+				print_msg(get_time(phil[i]->time_start), phil[i], MSG_DIED);
+				pthread_mutex_unlock(&phil[i]->mutex_t_eat);
+				v->number_of_times_each_philosopher_must_eat = 0;
+				return (200);
+			}
+			pthread_mutex_unlock(&phil[i]->mutex_t_eat);
+			i++;
+		}
+	}
+	return (0);
+}
+
 int	detach_threads(t_var *v, t_phil **phil, int counter)
 {
 	int	i;
@@ -55,18 +81,21 @@ int	init_mutexes(t_var *v, t_phil **phil)
 	
 	i = 0;
 	if (init_mutex(v->array_of_mutexes, NUMBER_OF_MUTEXES, \
-										&v->count_of_mutexes, &v->mutex_exclsn))
+									&v->counter_of_mutexes, &v->mutex_exclsn))
 		return (-1);
 	if (init_mutex(v->array_of_mutexes, NUMBER_OF_MUTEXES, \
-										&v->count_of_mutexes, &v->mutex_stdout))
+									&v->counter_of_mutexes, &v->mutex_stdout))
 		return (-1);
 	if (init_mutex(v->array_of_mutexes, NUMBER_OF_MUTEXES, \
-										&v->count_of_mutexes, &v->mutex_stderr))
+									&v->counter_of_mutexes, &v->mutex_stderr))
 		return (-1);
 	while (i < v->number_of_philosophers)
 	{
 		if (init_mutex(v->array_of_mutexes, NUMBER_OF_MUTEXES, \
-							&v->count_of_mutexes, &phil[i]->s[i]->mutex_state))
+						&v->counter_of_mutexes, &phil[i]->s[i]->mutex_state))
+			return (-1);
+		if (init_mutex(v->array_of_mutexes, NUMBER_OF_MUTEXES, \
+								&v->counter_of_mutexes, &phil[i]->mutex_t_eat))
 			return (-1);
 		i++;
 	}
@@ -75,16 +104,19 @@ int	init_mutexes(t_var *v, t_phil **phil)
 
 int	start_threads(t_var *v, t_phil **phil)
 {
-	int	i;
+	int		i;
+	long	time_start;
 
-	i = 0;
 	if (init_mutexes(v, phil))
 	{
-		errmsg("init_mutexess() error in start_threads()", errno);
+		errmsg("init_mutexess() error in start_threads()", -1);
 		return (-1);
 	}
+	i = 0;
+	time_start = get_time(0);
 	while (i < v->number_of_philosophers)
 	{
+		phil[i]->time_start = time_start;
 		if (i == MAX_NUM_OF_THREADS || \
 			pthread_create(&phil[i]->th, NULL, (void *)&philosopher, phil[i]))
 		{
@@ -94,6 +126,7 @@ int	start_threads(t_var *v, t_phil **phil)
 		i++;
 	}
 	detach_threads(v, phil, v->number_of_philosophers);
-	destroy_mutexes(v->array_of_mutexes, v->count_of_mutexes);
+	death_monitor(v, phil);
+	destroy_mutexes(v->array_of_mutexes, v->counter_of_mutexes);
 	return (0);
 }

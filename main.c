@@ -94,8 +94,8 @@ int	check_args(t_var *v)// The main() arguments will be added
 //	3 180 60 60
 //	if (!FALSE)
 //	return (errno);
-	v->number_of_philosophers = 4;
-	v->time_to_die = 180;
+	v->number_of_philosophers = 14;
+	v->time_to_die = 18000;
 	v->time_to_eat = 60;
 	v->time_to_sleep = 60;
 	v->number_of_times_each_philosopher_must_eat = INT_MAX;
@@ -127,7 +127,7 @@ int main()
 		free_mem(v.array_of_mallocs, v.counter_of_mallocs);
 		return (errno);
 	}
-	sleep(1);//FIXME
+	sleep(100);//FIXME
 	free_mem(v.array_of_mallocs, v.counter_of_mallocs);
 	return (0);
 }
