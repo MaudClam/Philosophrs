@@ -12,38 +12,43 @@
 
 #include "header.h"
 
-void	*philosopher(t_phil *ph)
+void	test(int i, t_phil *phil)
 {
-	printf("Hello from philosopher %d\n", ph->id + 1);
-	sleep(10);
-	printf("Hello1 from philosopher %d\n", ph->id + 1);
-	return (NULL);
+	if (phil->s[i]->state == HUNGRY && \
+		phil->s[LEFT]->state != EATING && phil->s[RIGHT]->state != EATING)
+	{
+		phil->s[i]->state = EATING;
+		pthread_mutex_unlock(&phil->s[i]->mutex_state);
+	}
 }
 
-int	start_threads(t_var *v, t_phil **phil, pthread_t *th)
+void	put_forks(int i, t_phil *phil)
 {
-	int	i;
+	pthread_mutex_lock(&phil->v->mutex_exclsn);
+	phil->s[i]->state = THINKING;
+	test(LEFT, phil);
+	test(RIGHT, phil);
+	pthread_mutex_unlock(&phil->v->mutex_exclsn);
+}
 
-	i = 0;
-	while (i < v->number_of_philosophers)
-	{
-		if (i == TEST_FALED_TO_CREATE_THREAD || \
-			pthread_create(&th[i], NULL, (void *)&philosopher, phil[i]))
-		{
-			errmsg("Faled to create thread", errno);
-			break;
-		}
-		i++;
-	}
-	i = 0;
-	while (i < v->number_of_philosophers)
-	{
-		if (pthread_detach(th[i]))
-		{
-			errmsg_clrmem("Faled to detach thread", errno, v, phil);
-			return (-1);
-		}
-		i++;
-	}
-	return (0);
+void	take_forks(int i, t_phil *phil)
+{
+	pthread_mutex_lock(&phil->v->mutex_exclsn);
+	phil->s[i]->state = HUNGRY;
+	test(i, phil);
+	pthread_mutex_unlock(&phil->v->mutex_exclsn);
+	pthread_mutex_lock(&phil->s[phil->id]->mutex_state);
+}
+
+void	*philosopher(t_phil *phil)
+{
+//	while (TRUE)
+//	{
+//		think();
+//		take_forks(phil->id, phil);
+//		eat();
+//		put_forks(phil->id, phil);
+		print_msg(phil, "Hi from philosopher");
+//	}
+	return (NULL);
 }

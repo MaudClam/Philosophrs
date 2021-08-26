@@ -12,11 +12,11 @@
 
 #include "header.h"
 
-int	errmsg_clrmem(char *str, int err, t_var *v, t_phil **phil)
+int	errmsg_mutex(char *str, int err, t_var *v)
 {
+	pthread_mutex_lock(&v->mutex_stderr);
 	errmsg(str, err);
-	destroy_mutexes(phil, v->number_of_philosophers);
-	free_mem(v);
+	pthread_mutex_unlock(&v->mutex_stderr);
 	return (err);
 }
 
@@ -30,43 +30,51 @@ int	errmsg(char *str, int err)
 	return (err);
 }
 
-void	destroy_mutexes(t_phil **phil, int i)
+void	destroy_mutexes(void **a, int counter)
 {
-	pthread_mutex_destroy((void *)phil[0]->mutex);
-	while (--i >= 0)
-		pthread_mutex_destroy(&phil[i]->s_pt[i]->mutex_s);
-}
-
-void	free_mem(t_var *v)
-{
-	int	i;
-
-	i = 0;
-	while (i < v->count_of_mallocs)
+	while (a && counter--)
 	{
-		free(v->mem[i]);
-		v->mem[i] = NULL;
-		i++;
+		if (a[counter])
+		{
+			pthread_mutex_destroy(a[counter]);
+			a[counter] = NULL;
+		}
 	}
 }
 
-void	*my_malloc(t_var *v, size_t size)
+void	free_mem(void **a, int counter)
+{
+	while (a && counter--)
+	{
+		free(a[counter]);
+		if (counter)
+			a[counter] = NULL;
+	}
+}
+
+void	*smart_calloc(void **a, int a_size, int *counter, size_t mem_size)
 {
 	void	*ptr;
+	char	*b;
 
 	ptr = NULL;
-	if (v->count_of_mallocs < NUMBER_OF_MALLOCS)
+	if (*counter < a_size)
 	{
-		ptr = malloc(size);
+		ptr = malloc(mem_size);
 		if (!ptr)
-			free_mem(v);
+			free_mem(a, *counter);
 		else
 		{
-			v->mem[v->count_of_mallocs] = ptr;
-			v->count_of_mallocs++;
+			if (!a)
+				a = ptr;
+			b = ptr;
+			while (mem_size--)
+				*(b++) = 0;
+			a[*counter] = ptr;
+			(*counter)++;
 		}
 	}
 	else
-		free_mem(v);
+		free_mem(a, *counter);
 	return (ptr);
 }

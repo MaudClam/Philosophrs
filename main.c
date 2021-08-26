@@ -12,32 +12,23 @@
 
 #include "header.h"
 
-int	init_varbls(t_var *v, t_phil_s **s, t_phil **phil, void *mutex)
+int	init_varbls(t_var *v, t_phil_status **s, t_phil **phil)
 {
 	int	i;
 
-	if (pthread_mutex_init(mutex, NULL))
-	{
-		free_mem(v);
-		errmsg("pthread_mutex_init() error in init_varbls()", errno);
-		return (-1);
-	}
 	i = 0;
 	while (i < v->number_of_philosophers)
 	{
 		phil[i]->id = i;
-		phil[i]->s_pt = s;
-		phil[i]->mutex = mutex;
-		phil[i]->v_pt = v;
-		if (pthread_mutex_init(&phil[i]->s_pt[i]->mutex_s, NULL))
-		{
-			destroy_mutexes(phil, i);
-			free_mem(v);
-			errmsg("pthrd_mutex_init()2 error in init_varbls()", errno);
-			return (-2);
-		}
+		phil[i]->s = s;
+		phil[i]->v = v;
 		i++;
 	}
+	v->array_of_mutexes = smart_calloc(v->array_of_mallocs, \
+		NUMBER_OF_MALLOCS, &v->counter_of_mallocs, \
+								sizeof(pthread_mutex_t) * NUMBER_OF_MUTEXES);
+	if (!v->array_of_mutexes)
+		return (errmsg("smart_calloc()[5] error in init_varbls()", -1));
 	return (0);
 }
 
@@ -47,17 +38,18 @@ t_phil	**init_phil(t_var *v)
 	t_phil	**phil_pt;
 	int		i;
 
-	phil = my_malloc(v, sizeof(t_phil) * v->number_of_philosophers);
+	phil = smart_calloc(v->array_of_mallocs, NUMBER_OF_MALLOCS, \
+			&v->counter_of_mallocs, sizeof(t_phil) * v->number_of_philosophers);
 	if (!phil)
 	{
-		errmsg("my_malloc() error in init_phil()", errno);
+		errmsg("smart_calloc()[3] error in init_phil()", -1);
 		return (NULL);
 	}
-	memset(phil, 0, sizeof(t_phil) * v->number_of_philosophers);
-	phil_pt = my_malloc(v, sizeof(t_phil *) * (v->number_of_philosophers + 1));
+	phil_pt = smart_calloc(v->array_of_mallocs, NUMBER_OF_MALLOCS, \
+	&v->counter_of_mallocs, sizeof(t_phil *) * (v->number_of_philosophers + 1));
 	if (!phil_pt)
 	{
-		errmsg("my_malloc()1 error in init_phil()", errno);
+		errmsg("smart_calloc()[4] error in init_phil()", -1);
 		return (NULL);
 	}
 	i = v->number_of_philosophers;
@@ -67,72 +59,75 @@ t_phil	**init_phil(t_var *v)
 	return (phil_pt);
 }
 
-t_phil_s	**init_phil_s(t_var *v)
+t_phil_status	**init_phil_status(t_var *v)
 {
-	t_phil_s	*s;
-	t_phil_s	**s_pt;
-	int				i;
+	t_phil_status	*s;
+	t_phil_status	**pt_s;
+	int			i;
 
-	s = my_malloc(v, sizeof(t_phil_s) * v->number_of_philosophers);
+	s = smart_calloc(v->array_of_mallocs, NUMBER_OF_MALLOCS, \
+					&v->counter_of_mallocs, sizeof(t_phil_status) * \
+													v->number_of_philosophers);
 	if (!s)
 	{
-		errmsg("my_malloc() error in init_phil_s()", errno);
+		errmsg("smart_calloc()[1] error in init_phil_status()", -1);
 		return (NULL);
 	}
-	memset(s, 0, sizeof(t_phil) * v->number_of_philosophers);
-	s_pt = my_malloc(v, sizeof(t_phil_s *) * (v->number_of_philosophers + 1));
-	if (!s_pt)
+	pt_s = smart_calloc(v->array_of_mallocs, NUMBER_OF_MALLOCS, \
+							&v->counter_of_mallocs, sizeof(t_phil_status *) * \
+											(v->number_of_philosophers + 1));
+	if (!pt_s)
 	{
-		errmsg("my_malloc()1 error in init_phil_s()", errno);
+		errmsg("smart_calloc()[2] error in init_phil_status()", -1);
 		return (NULL);
 	}
 	i = v->number_of_philosophers;
-	s_pt[i] = NULL;
+	pt_s[i] = NULL;
 	while (i--)
-		s_pt[i] = &s[i];
-	return (s_pt);
+		pt_s[i] = &s[i];
+	return (pt_s);
 }
 
 int	check_args(t_var *v)// The main() arguments will be added
 {
 	memset(v, 0, sizeof(t_var));
+//	3 180 60 60
+//	if (!FALSE)
+//	return (errno);
 	v->number_of_philosophers = 4;
-	v->time_to_die = 500;
-	v->time_to_eat = 10;
-	v->time_to_sleep = 80;
-	v->number_of_times_each_philosopher_must_eat = 500;
+	v->time_to_die = 180;
+	v->time_to_eat = 60;
+	v->time_to_sleep = 60;
+	v->number_of_times_each_philosopher_must_eat = INT_MAX;
+	v->array_of_mallocs = smart_calloc(NULL, NUMBER_OF_MALLOCS, \
+					&v->counter_of_mallocs, sizeof(void *) * NUMBER_OF_MALLOCS);
+	if (!v->array_of_mallocs)
+		return (errmsg("smart_calloc()[0] error in main()", -1));
 	return (0);
 }
 
 int main()
 {
 	t_var			v;
-	t_phil_s	**s;
+	t_phil_status	**s;
 	t_phil			**phil;
-	pthread_mutex_t	mutex;
-	pthread_t		*th;
 
 	if (check_args(&v))// The main() arguments will be added
-		return (errmsg("check_args() error in main()", errno));
-	s = init_phil_s(&v);
+		return (errno);
+	s = init_phil_status(&v);
 	if (!s)
 		return (errno);
 	phil = init_phil(&v);
 	if (!phil)
 		return (errno);
-	th = my_malloc(&v, sizeof(pthread_t) * v.number_of_philosophers);
-	if (!th)
-		return (errmsg("my_malloc() error in main()", errno));
-	if (init_varbls(&v, s, phil, &mutex))
+	if (init_varbls(&v, s, phil))
 		return (errno);
-	if (start_threads(&v, phil, th))
+	if (start_threads(&v, phil))
+	{
+		free_mem(v.array_of_mallocs, v.counter_of_mallocs);
 		return (errno);
-
-	printf("From main()\n");//FIXME
-	sleep(20);
-	printf("From1 main()\n");
-	
-	destroy_mutexes(phil, v.number_of_philosophers);
-	free_mem(&v);
+	}
+	sleep(1);//FIXME
+	free_mem(v.array_of_mallocs, v.counter_of_mallocs);
 	return (0);
 }
