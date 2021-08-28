@@ -27,28 +27,23 @@
 # endif
 
 # ifndef NUMBER_OF_MUTEXES
-#  define NUMBER_OF_MUTEXES v->number_of_philosophers * 2 + 3
+#  define NUMBER_OF_MUTEXES v->number_of_philosophers * 2 + 2
 # endif
 
 # ifndef MAX_NUM_OF_THREADS
 #  define MAX_NUM_OF_THREADS INT_MAX
 # endif
 
-# ifndef TIME_OF_DEATH_MONITORING
-#  define TIME_OF_DEATH_MONITORING 100
+# ifndef INTERVAL_OF_DEATH_MONITORING
+#  define INTERVAL_OF_DEATH_MONITORING 100
 # endif
 
-# define N				phil->v->number_of_philosophers
-# define LEFT			(i + N - 1) % N
-# define RIGHT			(i + 1) % N
-# define YES			1
-# define NO				0
+# define N				v->number_of_philosophers
+# define N_				phil->v->number_of_philosophers
+# define LEFT			(i + N_ - 1) % N_
+# define RIGHT			i
 # define TRUE			1
 # define FALSE			0
-# define SLEEPING		0
-# define THINKING		1
-# define HUNGRY			2
-# define EATING			3
 # define MSG_TAKEN_FORK	"\033[33m has taken a fork\033[0m\n"
 # define MSG_EATING		"\033[32m is eating\033[0m\n"
 # define MSG_SLEEPING	"\033[37m is sleeping\033[0m\n"
@@ -56,7 +51,7 @@
 # define MSG_DIED		"\033[31m is died\033[0m\n"
 
 typedef struct s_var			t_var;
-typedef struct s_phil_status	t_phil_status;
+typedef struct s_fork			t_fork;
 typedef struct s_phil			t_phil;
 
 struct				s_var
@@ -70,15 +65,13 @@ struct				s_var
 	int				counter_of_mallocs;
 	void			**array_of_mutexes;
 	int				counter_of_mutexes;
-	pthread_mutex_t	mutex_exclsn;	/* Critical area entry mutual exclusion   */
+	pthread_mutex_t	mutex_death;	/* Death area entry mutual exclusion      */
 	pthread_mutex_t	mutex_stdout;	/* Stdout area entry mutual exclusion     */
-	pthread_mutex_t	mutex_stderr;	/* Stderr area entry mutual exclusion     */
 };
 
-struct				s_phil_status
+struct				s_fork
 {
-	char			state;			/* State of a philosopher                 */
-	pthread_mutex_t	mutex_state;	/* One semaphore for each philosopher     */
+	pthread_mutex_t	mutex_fork;		/* One mutex for each fork                */
 };
 
 struct				s_phil
@@ -93,7 +86,7 @@ struct				s_phil
 	pthread_mutex_t	mutex_t_eat;	/* Time_last_ate area entry exclusion     */
 	pthread_t		th;				/* Philosopher's thread                   */
 	t_var			*v;				/* Pointer to array of variables          */
-	t_phil_status	**s;			/* Pointer to state of a philosopher      */
+	t_fork			**s;			/* Pointer to state of a philosopher      */
 };
 /*
 **		Philosopher functions, philo.c
@@ -101,14 +94,14 @@ struct				s_phil
 void	*philosopher(t_phil *phil);
 void	take_forks(int i, t_phil *phil);
 void	put_forks(int i, t_phil *phil);
-void	test(int i, t_phil *phil);
 /*
 **		Philosopher functions, philo1.c
 */
 void	print_msg(long time, t_phil *phil, char *msg);
 long	get_time(long start);
 void	eating(t_phil *phil);
-
+void	sleeping(t_phil *phil);
+int		is_philosopher_dead(t_phil *phil);
 /*
 **		Thread functions, threads.c
 */
@@ -119,10 +112,10 @@ int		detach_threads(t_var *v, t_phil **phil, int counter);
 /*
 **		Initialization functions, main.c
 */
-int				check_args(t_var *v);
-t_phil_status	**init_phil_status(t_var *v);
-t_phil			**init_phil(t_var *v);
-int				init_varbls(t_var *v, t_phil_status **s, t_phil **phil);
+int		check_args(t_var *v);
+t_fork	**init_forks(t_var *v);
+t_phil	**init_phil(t_var *v);
+int		 init_variables(t_var *v, t_fork **s, t_phil **phil);
 /*
 **		Malloc service and exit functions, utils.c
 */

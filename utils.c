@@ -14,9 +14,9 @@
 
 int	errmsg_mutex(char *str, int err, t_var *v)
 {
-	pthread_mutex_lock(&v->mutex_stderr);
+	pthread_mutex_lock(&v->mutex_stdout);
 	errmsg(str, err);
-	pthread_mutex_unlock(&v->mutex_stderr);
+	pthread_mutex_unlock(&v->mutex_stdout);
 	return (err);
 }
 

@@ -18,17 +18,22 @@ int	death_monitor(t_var *v, t_phil **phil)
 	
 	while (TRUE)
 	{
-		usleep(TIME_OF_DEATH_MONITORING);
+		usleep(INTERVAL_OF_DEATH_MONITORING);
 		i = 0;
-		while (i < v->number_of_philosophers)
+		while (i < N)
 		{
 			pthread_mutex_lock(&phil[i]->mutex_t_eat);
-			if (get_time(phil[i]->time_start) - phil[i]->time_last_ate >= \
-																v->time_to_die)
+			if (get_time(phil[0]->time_start) - phil[0]->time_last_ate > \
+														phil[0]->v->time_to_die)
 			{
-				print_msg(get_time(phil[i]->time_start), phil[i], MSG_DIED);
 				pthread_mutex_unlock(&phil[i]->mutex_t_eat);
+//				pthread_mutex_lock(&phil[i]->v->mutex_death);
 				v->number_of_times_each_philosopher_must_eat = 0;
+//				pthread_mutex_unlock(&phil[i]->v->mutex_death);
+				pthread_mutex_lock(&phil[i]->v->mutex_stdout);
+				printf("%ld %d%s", get_time(phil[i]->time_start), \
+													phil[i]->id + 1, MSG_DIED);
+				pthread_mutex_unlock(&phil[i]->v->mutex_stdout);
 				return (200);
 			}
 			pthread_mutex_unlock(&phil[i]->mutex_t_eat);
@@ -81,18 +86,15 @@ int	init_mutexes(t_var *v, t_phil **phil)
 	
 	i = 0;
 	if (init_mutex(v->array_of_mutexes, NUMBER_OF_MUTEXES, \
-									&v->counter_of_mutexes, &v->mutex_exclsn))
+									&v->counter_of_mutexes, &v->mutex_death))
 		return (-1);
 	if (init_mutex(v->array_of_mutexes, NUMBER_OF_MUTEXES, \
 									&v->counter_of_mutexes, &v->mutex_stdout))
 		return (-1);
-	if (init_mutex(v->array_of_mutexes, NUMBER_OF_MUTEXES, \
-									&v->counter_of_mutexes, &v->mutex_stderr))
-		return (-1);
-	while (i < v->number_of_philosophers)
+	while (i < N)
 	{
 		if (init_mutex(v->array_of_mutexes, NUMBER_OF_MUTEXES, \
-						&v->counter_of_mutexes, &phil[i]->s[i]->mutex_state))
+						&v->counter_of_mutexes, &phil[i]->s[i]->mutex_fork))
 			return (-1);
 		if (init_mutex(v->array_of_mutexes, NUMBER_OF_MUTEXES, \
 								&v->counter_of_mutexes, &phil[i]->mutex_t_eat))
@@ -114,7 +116,7 @@ int	start_threads(t_var *v, t_phil **phil)
 	}
 	i = 0;
 	time_start = get_time(0);
-	while (i < v->number_of_philosophers)
+	while (i < N)
 	{
 		phil[i]->time_start = time_start;
 		if (i == MAX_NUM_OF_THREADS || \
@@ -125,7 +127,7 @@ int	start_threads(t_var *v, t_phil **phil)
 		}
 		i++;
 	}
-	detach_threads(v, phil, v->number_of_philosophers);
+	detach_threads(v, phil, N);
 	death_monitor(v, phil);
 	destroy_mutexes(v->array_of_mutexes, v->counter_of_mutexes);
 	return (0);
