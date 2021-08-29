@@ -12,6 +12,10 @@
 
 #include "header.h"
 
+#ifndef NOTEPME
+# define NOTEPME phil[i]->v->number_of_times_each_philosopher_must_eat
+#endif
+
 int	death_monitor(t_var *v, t_phil **phil)
 {
 	int		i;
@@ -26,14 +30,9 @@ int	death_monitor(t_var *v, t_phil **phil)
 			if (get_time(phil[0]->time_start) - phil[0]->time_last_ate > \
 														phil[0]->v->time_to_die)
 			{
+				if (phil[i]->eat_counter != NOTEPME)
+					it_is_death(get_time(phil[i]->time_start), phil[i]);
 				pthread_mutex_unlock(&phil[i]->mutex_t_eat);
-//				pthread_mutex_lock(&phil[i]->v->mutex_death);
-				v->number_of_times_each_philosopher_must_eat = 0;
-//				pthread_mutex_unlock(&phil[i]->v->mutex_death);
-				pthread_mutex_lock(&phil[i]->v->mutex_stdout);
-				printf("%ld %d%s", get_time(phil[i]->time_start), \
-													phil[i]->id + 1, MSG_DIED);
-				pthread_mutex_unlock(&phil[i]->v->mutex_stdout);
 				return (200);
 			}
 			pthread_mutex_unlock(&phil[i]->mutex_t_eat);
@@ -94,7 +93,7 @@ int	init_mutexes(t_var *v, t_phil **phil)
 	while (i < N)
 	{
 		if (init_mutex(v->array_of_mutexes, NUMBER_OF_MUTEXES, \
-						&v->counter_of_mutexes, &phil[i]->s[i]->mutex_fork))
+						&v->counter_of_mutexes, &phil[i]->f[i]->mutex_fork))
 			return (-1);
 		if (init_mutex(v->array_of_mutexes, NUMBER_OF_MUTEXES, \
 								&v->counter_of_mutexes, &phil[i]->mutex_t_eat))

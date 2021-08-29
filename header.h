@@ -23,7 +23,7 @@
 # include <limits.h>
 
 # ifndef NUMBER_OF_MALLOCS
-#  define NUMBER_OF_MALLOCS 6
+#  define NUMBER_OF_MALLOCS	6
 # endif
 
 # ifndef NUMBER_OF_MUTEXES
@@ -35,7 +35,7 @@
 # endif
 
 # ifndef INTERVAL_OF_DEATH_MONITORING
-#  define INTERVAL_OF_DEATH_MONITORING 100
+#  define INTERVAL_OF_DEATH_MONITORING 500
 # endif
 
 # define N				v->number_of_philosophers
@@ -81,12 +81,12 @@ struct				s_phil
 	long			meal;			/* Philosopher's meal                     */
 	long			belly;			/* Philosopher's belly                    */
 	long			feces;			/* Philosopher's feces                    */
-	int				eat_cntr;		/* Philosopher's eats Counter             */
+	int				 eat_counter;	/* Philosopher's eats Counter             */
 	long			time_last_ate;	/* Philosopher's time ate the last time   */
 	pthread_mutex_t	mutex_t_eat;	/* Time_last_ate area entry exclusion     */
 	pthread_t		th;				/* Philosopher's thread                   */
 	t_var			*v;				/* Pointer to array of variables          */
-	t_fork			**s;			/* Pointer to state of a philosopher      */
+	t_fork			**f;			/* Pointer to state of a philosopher      */
 };
 /*
 **		Philosopher functions, philo.c
@@ -101,7 +101,7 @@ void	print_msg(long time, t_phil *phil, char *msg);
 long	get_time(long start);
 void	eating(t_phil *phil);
 void	sleeping(t_phil *phil);
-int		is_philosopher_dead(t_phil *phil);
+void	it_is_death(long time, t_phil *phil);
 /*
 **		Thread functions, threads.c
 */

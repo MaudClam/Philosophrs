@@ -12,7 +12,7 @@
 
 #include "header.h"
 
-int	 init_variables(t_var *v, t_fork **s, t_phil **phil)
+int	 init_variables(t_var *v, t_fork **f, t_phil **phil)
 {
 	int	i;
 
@@ -20,7 +20,7 @@ int	 init_variables(t_var *v, t_fork **s, t_phil **phil)
 	while (i < N)
 	{
 		phil[i]->id = i;
-		phil[i]->s = s;
+		phil[i]->f = f;
 		phil[i]->v = v;
 		i++;
 	}
@@ -93,10 +93,10 @@ int	check_args(t_var *v)// The main() arguments will be added
 //	if (!FALSE)
 //	return (errno);
 	v->number_of_philosophers = 5;
-	v->time_to_die = 800;
+	v->time_to_die = 400;
 	v->time_to_eat = 200;
 	v->time_to_sleep = 200;
-	v->number_of_times_each_philosopher_must_eat = 3;//INT_MAX;
+	v->number_of_times_each_philosopher_must_eat = 7; //INT_MAX;
 	v->array_of_mallocs = smart_calloc(NULL, NUMBER_OF_MALLOCS, \
 					&v->counter_of_mallocs, sizeof(void *) * NUMBER_OF_MALLOCS);
 	if (!v->array_of_mallocs)
@@ -107,25 +107,25 @@ int	check_args(t_var *v)// The main() arguments will be added
 int main()
 {
 	t_var	v;
-	t_fork	**s;
+	t_fork	**f;
 	t_phil	**phil;
 
 	if (check_args(&v))// The main() arguments will be added
 		return (errno);
-	s = init_forks(&v);
-	if (!s)
+	f = init_forks(&v);
+	if (!f)
 		return (errno);
 	phil = init_phil(&v);
 	if (!phil)
 		return (errno);
-	if ( init_variables(&v, s, phil))
+	if ( init_variables(&v, f, phil))
 		return (errno);
 	if (start_threads(&v, phil))
 	{
 		free_mem(v.array_of_mallocs, v.counter_of_mallocs);
 		return (errno);
 	}
-	usleep(500000 * v.number_of_philosophers);
+	usleep(1000000 + 100000 * v.number_of_philosophers);
 	free_mem(v.array_of_mallocs, v.counter_of_mallocs);
 	return (0);
 }
