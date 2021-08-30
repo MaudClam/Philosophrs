@@ -12,6 +12,11 @@
 
 #include "header.h"
 
+int	left(int i, int n)
+{
+	return ((i + n - 1) % n);
+}
+
 void	game_over(t_var *v, t_phil **phil)
 {
 	int		i;
@@ -22,14 +27,14 @@ void	game_over(t_var *v, t_phil **phil)
 		usleep(INTERVAL_OF_DEATH_MONITORING);
 		i = 0;
 		counter = 0;
-		while (i < N)
+		while (i < v->pnu)
 		{
 			pthread_mutex_lock(&phil[i]->mutex_t_eat);
 			counter += phil[i]->thread_compltd;
 			pthread_mutex_unlock(&phil[i]->mutex_t_eat);
 			i++;
 		}
-		if (counter == N)
+		if (counter == v->pnu)
 		{
 			if (phil[0]->v->number_of_times_each_philosopher_must_eat == 0)
 				printf("%s", MSG_GAME_OVER_RED);

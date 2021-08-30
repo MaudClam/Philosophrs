@@ -17,7 +17,7 @@ int	init_variables(t_var *v, t_fork **f, t_phil **phil)
 	int	i;
 
 	i = 0;
-	while (i < N)
+	while (i < v->pnu)
 	{
 		phil[i]->i = i;
 		phil[i]->id = i + 1;
@@ -27,7 +27,7 @@ int	init_variables(t_var *v, t_fork **f, t_phil **phil)
 	}
 	v->array_of_mutexes = smart_calloc(v->array_of_mallocs, \
 								NUMBER_OF_MALLOCS, &v->counter_of_mallocs, \
-								sizeof(pthread_mutex_t) * NUMBER_OF_MUTEXES);
+								sizeof(pthread_mutex_t) * (v->pnu * 2 + 1));
 	if (!v->array_of_mutexes)
 		return (errmsg("smart_calloc()[5] error in  init_variables()", -1));
 	return (0);
@@ -40,20 +40,20 @@ t_phil	**init_phil(t_var *v)
 	int		i;
 
 	phil = smart_calloc(v->array_of_mallocs, NUMBER_OF_MALLOCS, \
-									&v->counter_of_mallocs, sizeof(t_phil) * N);
+							&v->counter_of_mallocs, sizeof(t_phil) * v->pnu);
 	if (!phil)
 	{
 		errmsg("smart_calloc()[3] error in init_phil()", -1);
 		return (NULL);
 	}
 	phil_pt = smart_calloc(v->array_of_mallocs, NUMBER_OF_MALLOCS, \
-						   &v->counter_of_mallocs, sizeof(t_phil *) * (N + 1));
+					&v->counter_of_mallocs, sizeof(t_phil *) * (v->pnu + 1));
 	if (!phil_pt)
 	{
 		errmsg("smart_calloc()[4] error in init_phil()", -1);
 		return (NULL);
 	}
-	i = N;
+	i = v->pnu;
 	phil_pt[i] = NULL;
 	while (i--)
 		phil_pt[i] = &phil[i];
@@ -67,20 +67,20 @@ t_fork	**init_forks(t_var *v)
 	int		i;
 
 	s = smart_calloc(v->array_of_mallocs, NUMBER_OF_MALLOCS, \
-					&v->counter_of_mallocs, sizeof(t_fork) * N);
+					&v->counter_of_mallocs, sizeof(t_fork) * v->pnu);
 	if (!s)
 	{
 		errmsg("smart_calloc()[1] error in init_forks()", -1);
 		return (NULL);
 	}
 	pt_s = smart_calloc(v->array_of_mallocs, NUMBER_OF_MALLOCS, \
-							&v->counter_of_mallocs, sizeof(t_fork *) * (N + 1));
+					&v->counter_of_mallocs, sizeof(t_fork *) * (v->pnu + 1));
 	if (!pt_s)
 	{
 		errmsg("smart_calloc()[2] error in init_forks()", -1);
 		return (NULL);
 	}
-	i = N;
+	i = v->pnu;
 	pt_s[i] = NULL;
 	while (i--)
 		pt_s[i] = &s[i];
@@ -90,25 +90,25 @@ t_fork	**init_forks(t_var *v)
 int	check_args(t_var *v, int argc, char **argv)
 {
 	if (argc < 2 || argc > 6)
-		return (printf("%s", MSG_BAD_ARGUMENTS));
-	v->number_of_philosophers = ft_atoi(argv[1]);
-	if (v->number_of_philosophers < 1 || v->number_of_philosophers > 200)
-		return (printf("%s", MSG_BAD_ARGUMENTS));
+		return (!msg_bad_arguments());
+	v->pnu = ft_atoi(argv[1]);
+	if (v->pnu < 1 || v->pnu > 200)
+		return (!msg_bad_arguments());
 	v->time_to_die = ft_atoi(argv[2]);
 	if (v->time_to_die < 60 || v->time_to_die > INT_MAX)
-		return (printf("%s", MSG_BAD_ARGUMENTS));
+		return (!msg_bad_arguments());
 	v->time_to_eat = ft_atoi(argv[3]);
 	if (v->time_to_eat < 60 || v->time_to_die > INT_MAX)
-		return (printf("%s", MSG_BAD_ARGUMENTS));
+		return (!msg_bad_arguments());
 	v->time_to_sleep = ft_atoi(argv[4]);
 	if (v->time_to_sleep < 60 || v->time_to_die > INT_MAX)
-		return (printf("%s", MSG_BAD_ARGUMENTS));
+		return (!msg_bad_arguments());
 	v->number_of_times_each_philosopher_must_eat = INT_MAX;
 	if (argc == 6)
 		v->number_of_times_each_philosopher_must_eat = ft_atoi(argv[5]);
 	if (v->number_of_times_each_philosopher_must_eat < 1 || \
 						v->number_of_times_each_philosopher_must_eat > INT_MAX)
-		return (printf("%s", MSG_BAD_ARGUMENTS));
+		return (!msg_bad_arguments());
 	v->array_of_mallocs = smart_calloc(NULL, NUMBER_OF_MALLOCS, \
 					&v->counter_of_mallocs, sizeof(void *) * NUMBER_OF_MALLOCS);
 	if (!v->array_of_mallocs)
