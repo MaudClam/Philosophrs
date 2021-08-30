@@ -12,7 +12,7 @@
 
 #include "header.h"
 
-void    ft_swap(long *a, long *b)
+void	ft_swap(long *a, long *b)
 {
 	*a = *a ^ *b;
 	*b = *a ^ *b;
@@ -25,7 +25,7 @@ void    ft_swap(long *a, long *b)
 
 static int	islonglong(unsigned long nbr, int sign)
 {
-	if (nbr >= LONG_LONG_MAX && sign > 0)
+	if (nbr >= LLONG_MAX && sign > 0)
 		return (-1);
 	else if (nbr > LONG_LONG_MAX)
 		return (0);

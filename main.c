@@ -12,7 +12,7 @@
 
 #include "header.h"
 
-int	 init_variables(t_var *v, t_fork **f, t_phil **phil)
+int	init_variables(t_var *v, t_fork **f, t_phil **phil)
 {
 	int	i;
 
@@ -116,7 +116,7 @@ int	check_args(t_var *v, int argc, char **argv)
 	return (0);
 }
 
-int main(int argc, char **argv)
+int	main(int argc, char **argv)
 {
 	t_var	v;
 	t_fork	**f;
@@ -131,7 +131,7 @@ int main(int argc, char **argv)
 	phil = init_phil(&v);
 	if (!phil)
 		return (errno);
-	if ( init_variables(&v, f, phil))
+	if (init_variables(&v, f, phil))
 		return (errno);
 	if (start_threads(&v, phil))
 	{

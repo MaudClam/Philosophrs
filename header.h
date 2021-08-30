@@ -119,6 +119,7 @@ int		sleeping(t_phil *phil);
 void	print_msg(long time, t_phil *phil, char *msg);
 long	get_time(long start);
 void	it_is_death(long time, t_phil *phil);
+void	game_over(t_var *v, t_phil **phil);
 /*
 **		Thread functions, threads.c
 */
@@ -126,7 +127,7 @@ int		start_threads(t_var *v, t_phil **phil);
 int		init_mutexes(t_var *v, t_phil **phil);
 int		init_mutex(void **a, int a_size, int *counter, pthread_mutex_t *mutex);
 int		detach_threads(t_var *v, t_phil **phil, int counter);
-void	game_over(t_var *v, t_phil **phil);
+int		death_monitor(t_var *v, t_phil **phil);
 /*
 **		Initialization functions, main.c
 */

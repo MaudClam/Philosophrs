@@ -31,7 +31,7 @@ int	sleeping(t_phil *phil)
 int	eating(t_phil *phil)
 {
 	long	time_start_eat;
-	
+
 	pthread_mutex_lock(&phil->mutex_t_eat);
 	time_start_eat = get_time(phil->time_start);
 	if (get_time(phil->time_start) - time_start_eat >= phil->v->time_to_die)

@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <limits.h>
 
 void	free_mem(void **a, int counter)
 {
@@ -42,7 +42,7 @@ void	*smart_calloc(void **a, int a_size, int *counter, size_t mem_size)
 
 int	main ()
 {
-	int 	i = 0;
+	/*	int 	i = 0;
 	int 	counter = 0;
 	int		a_size = 5;
 	void	*ptr;
@@ -56,6 +56,7 @@ int	main ()
 		printf("%p-\n", ptr);
 		i++;
 	}
-	free_mem(a, counter);
+	free_mem(a, counter);*/
+	printf("%lld", LONG_LONG_MAX);
 	return (0);
 }

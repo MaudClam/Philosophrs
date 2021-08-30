@@ -12,38 +12,10 @@
 
 #include "header.h"
 
-void	game_over(t_var *v, t_phil **phil)
-{
-	int		i;
-	int		counter;
-	
-	while (TRUE)
-	{
-		usleep(INTERVAL_OF_DEATH_MONITORING);
-		i = 0;
-		counter = 0;
-		while (i < N)
-		{
-			pthread_mutex_lock(&phil[i]->mutex_t_eat);
-			counter += phil[i]->thread_compltd;
-			pthread_mutex_unlock(&phil[i]->mutex_t_eat);
-			i++;
-		}
-		if (counter == N)
-		{
-			if (phil[0]->v->number_of_times_each_philosopher_must_eat == 0)
-				printf("%s", MSG_GAME_OVER_RED);
-			else
-				printf("%s", MSG_GAME_OVER_GREEN);
-			return ;
-		}
-	}
-}
-
 int	death_monitor(t_var *v, t_phil **phil)
 {
 	int		i;
-	
+
 	while (TRUE)
 	{
 		usleep(INTERVAL_OF_DEATH_MONITORING);
@@ -107,8 +79,8 @@ int	init_mutex(void **a, int a_size, int *counter, pthread_mutex_t *mutex)
 
 int	init_mutexes(t_var *v, t_phil **phil)
 {
-	int i;
-	
+	int	i;
+
 	i = 0;
 	if (init_mutex(v->array_of_mutexes, NUMBER_OF_MUTEXES, \
 									&v->counter_of_mutexes, &v->mutex_stdout))
