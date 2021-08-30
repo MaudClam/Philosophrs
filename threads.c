@@ -12,9 +12,33 @@
 
 #include "header.h"
 
-#ifndef NOTEPME
-# define NOTEPME phil[i]->v->number_of_times_each_philosopher_must_eat
-#endif
+void	game_over(t_var *v, t_phil **phil)
+{
+	int		i;
+	int		counter;
+	
+	while (TRUE)
+	{
+		usleep(INTERVAL_OF_DEATH_MONITORING);
+		i = 0;
+		counter = 0;
+		while (i < N)
+		{
+			pthread_mutex_lock(&phil[i]->mutex_t_eat);
+			counter += phil[i]->thread_compltd;
+			pthread_mutex_unlock(&phil[i]->mutex_t_eat);
+			i++;
+		}
+		if (counter == N)
+		{
+			if (phil[0]->v->number_of_times_each_philosopher_must_eat == 0)
+				printf("%s", MSG_GAME_OVER_RED);
+			else
+				printf("%s", MSG_GAME_OVER_GREEN);
+			return ;
+		}
+	}
+}
 
 int	death_monitor(t_var *v, t_phil **phil)
 {
@@ -27,12 +51,14 @@ int	death_monitor(t_var *v, t_phil **phil)
 		while (i < N)
 		{
 			pthread_mutex_lock(&phil[i]->mutex_t_eat);
-			if (get_time(phil[0]->time_start) - phil[0]->time_last_ate > \
-														phil[0]->v->time_to_die)
+			if (get_time(phil[i]->time_start) - phil[i]->time_last_ate >= \
+														phil[i]->v->time_to_die)
 			{
-				if (phil[i]->eat_counter != NOTEPME)
+				if (phil[i]->eat_counter != \
+				phil[i]->v->number_of_times_each_philosopher_must_eat)
 					it_is_death(get_time(phil[i]->time_start), phil[i]);
 				pthread_mutex_unlock(&phil[i]->mutex_t_eat);
+				game_over(v, phil);
 				return (200);
 			}
 			pthread_mutex_unlock(&phil[i]->mutex_t_eat);
@@ -59,7 +85,7 @@ int	detach_threads(t_var *v, t_phil **phil, int counter)
 	return (0);
 }
 
-int		init_mutex(void **a, int a_size, int *counter, pthread_mutex_t *mutex)
+int	init_mutex(void **a, int a_size, int *counter, pthread_mutex_t *mutex)
 {
 	if (*counter < a_size)
 	{
@@ -85,9 +111,6 @@ int	init_mutexes(t_var *v, t_phil **phil)
 	
 	i = 0;
 	if (init_mutex(v->array_of_mutexes, NUMBER_OF_MUTEXES, \
-									&v->counter_of_mutexes, &v->mutex_death))
-		return (-1);
-	if (init_mutex(v->array_of_mutexes, NUMBER_OF_MUTEXES, \
 									&v->counter_of_mutexes, &v->mutex_stdout))
 		return (-1);
 	while (i < N)
@@ -106,7 +129,6 @@ int	init_mutexes(t_var *v, t_phil **phil)
 int	start_threads(t_var *v, t_phil **phil)
 {
 	int		i;
-	long	time_start;
 
 	if (init_mutexes(v, phil))
 	{
@@ -114,16 +136,15 @@ int	start_threads(t_var *v, t_phil **phil)
 		return (-1);
 	}
 	i = 0;
-	time_start = get_time(0);
 	while (i < N)
 	{
-		phil[i]->time_start = time_start;
 		if (i == MAX_NUM_OF_THREADS || \
 			pthread_create(&phil[i]->th, NULL, (void *)&philosopher, phil[i]))
 		{
 			errmsg_mutex("Faled to create thread", errno, v);
 			break ;
 		}
+		phil[i]->time_start = get_time(0);
 		i++;
 	}
 	detach_threads(v, phil, N);

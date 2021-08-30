@@ -12,7 +12,52 @@
 
 #include "header.h"
 
-void	put_forks(int i, t_phil *phil)
+int	sleeping(t_phil *phil)
+{
+	long	time_start_sleep;
+
+	time_start_sleep = get_time(phil->time_start);
+	while (get_time(phil->time_start) - time_start_sleep < \
+														phil->v->time_to_sleep)
+	{
+		if (get_time(phil->time_start) - phil->time_last_ate >= \
+														phil->v->time_to_die)
+			return (FALSE);
+		usleep(500);
+	}
+	return (TRUE);
+}
+
+int	eating(t_phil *phil)
+{
+	long	time_start_eat;
+	
+	pthread_mutex_lock(&phil->mutex_t_eat);
+	time_start_eat = get_time(phil->time_start);
+	if (get_time(phil->time_start) - time_start_eat >= phil->v->time_to_die)
+	{
+		pthread_mutex_unlock(&phil->mutex_t_eat);
+		return (FALSE);
+	}
+	phil->time_last_ate = time_start_eat;
+	pthread_mutex_unlock(&phil->mutex_t_eat);
+	print_msg(get_time(phil->time_start), phil, MSG_EATING);
+	while (get_time(phil->time_start) - time_start_eat < phil->v->time_to_eat)
+	{
+		phil->meal = LONG_MAX;
+		ft_swap(&phil->meal, &phil->belly);
+		ft_swap(&phil->belly, &phil->feces);
+		phil->feces = 0;
+	}
+	pthread_mutex_lock(&phil->mutex_t_eat);
+	if (phil->eat_counter++ == INT_MAX)
+		phil->eat_counter = 0;
+	phil->time_last_ate = get_time(phil->time_start);
+	pthread_mutex_unlock(&phil->mutex_t_eat);
+	return (TRUE);
+}
+
+int	put_forks(int i, t_phil *phil)
 {
 	if (LEFT > RIGHT)
 	{
@@ -26,24 +71,26 @@ void	put_forks(int i, t_phil *phil)
 		pthread_mutex_unlock(&phil->f[LEFT]->mutex_fork);
 		print_msg(get_time(phil->time_start), phil, MSG_SLEEPING);
 	}
+	return (TRUE);
 }
 
-void	take_forks(int i, t_phil *phil)
+int	take_forks(int i, t_phil *phil)
 {
 	if (LEFT < RIGHT)
 	{
 		pthread_mutex_lock(&phil->f[LEFT]->mutex_fork);
 		print_msg(get_time(phil->time_start), phil, MSG_TAKEN_FORK);
 		pthread_mutex_lock(&phil->f[RIGHT]->mutex_fork);
-		print_msg(get_time(phil->time_start), phil, MSG_EATING);
 	}
-	else
+	else if (LEFT > RIGHT)
 	{
 		pthread_mutex_lock(&phil->f[RIGHT]->mutex_fork);
 		print_msg(get_time(phil->time_start), phil, MSG_TAKEN_FORK);
 		pthread_mutex_lock(&phil->f[LEFT]->mutex_fork);
-		print_msg(get_time(phil->time_start), phil, MSG_EATING);
 	}
+	else
+		return (FALSE);
+	return (TRUE);
 }
 
 void	*philosopher(t_phil *phil)
@@ -51,11 +98,17 @@ void	*philosopher(t_phil *phil)
 	while (phil-> eat_counter < \
 							phil->v->number_of_times_each_philosopher_must_eat)
 	{
-		take_forks(phil->id, phil);
-		eating(phil);
-		put_forks(phil->id, phil);
-		sleeping(phil);
+		if (take_forks(phil->i, phil) == FALSE)
+			break ;
+		if (eating(phil) == FALSE)
+			break ;
+		put_forks(phil->i, phil);
+		if (sleeping(phil) == FALSE)
+			break ;
 		print_msg(get_time(phil->time_start), phil, MSG_THINKING);
 	}
+	pthread_mutex_lock(&phil->mutex_t_eat);
+	phil->thread_compltd = TRUE;
+	pthread_mutex_unlock(&phil->mutex_t_eat);
 	return (NULL);
 }

@@ -19,13 +19,14 @@ int	 init_variables(t_var *v, t_fork **f, t_phil **phil)
 	i = 0;
 	while (i < N)
 	{
-		phil[i]->id = i;
+		phil[i]->i = i;
+		phil[i]->id = i + 1;
 		phil[i]->f = f;
 		phil[i]->v = v;
 		i++;
 	}
 	v->array_of_mutexes = smart_calloc(v->array_of_mallocs, \
-		NUMBER_OF_MALLOCS, &v->counter_of_mallocs, \
+								NUMBER_OF_MALLOCS, &v->counter_of_mallocs, \
 								sizeof(pthread_mutex_t) * NUMBER_OF_MUTEXES);
 	if (!v->array_of_mutexes)
 		return (errmsg("smart_calloc()[5] error in  init_variables()", -1));
@@ -86,31 +87,43 @@ t_fork	**init_forks(t_var *v)
 	return (pt_s);
 }
 
-int	check_args(t_var *v)// The main() arguments will be added
+int	check_args(t_var *v, int argc, char **argv)
 {
-	memset(v, 0, sizeof(t_var));
-//	3 180 60 60
-//	if (!FALSE)
-//	return (errno);
-	v->number_of_philosophers = 5;
-	v->time_to_die = 400;
-	v->time_to_eat = 200;
-	v->time_to_sleep = 200;
-	v->number_of_times_each_philosopher_must_eat = 7; //INT_MAX;
+	if (argc < 2 || argc > 6)
+		return (printf("%s", MSG_BAD_ARGUMENTS));
+	v->number_of_philosophers = ft_atoi(argv[1]);
+	if (v->number_of_philosophers < 1 || v->number_of_philosophers > 200)
+		return (printf("%s", MSG_BAD_ARGUMENTS));
+	v->time_to_die = ft_atoi(argv[2]);
+	if (v->time_to_die < 60 || v->time_to_die > INT_MAX)
+		return (printf("%s", MSG_BAD_ARGUMENTS));
+	v->time_to_eat = ft_atoi(argv[3]);
+	if (v->time_to_eat < 60 || v->time_to_die > INT_MAX)
+		return (printf("%s", MSG_BAD_ARGUMENTS));
+	v->time_to_sleep = ft_atoi(argv[4]);
+	if (v->time_to_sleep < 60 || v->time_to_die > INT_MAX)
+		return (printf("%s", MSG_BAD_ARGUMENTS));
+	v->number_of_times_each_philosopher_must_eat = INT_MAX;
+	if (argc == 6)
+		v->number_of_times_each_philosopher_must_eat = ft_atoi(argv[5]);
+	if (v->number_of_times_each_philosopher_must_eat < 1 || \
+						v->number_of_times_each_philosopher_must_eat > INT_MAX)
+		return (printf("%s", MSG_BAD_ARGUMENTS));
 	v->array_of_mallocs = smart_calloc(NULL, NUMBER_OF_MALLOCS, \
 					&v->counter_of_mallocs, sizeof(void *) * NUMBER_OF_MALLOCS);
 	if (!v->array_of_mallocs)
-		return (errmsg("smart_calloc()[0] error in main()", -1));
+		return (errmsg("smart_calloc()[0] error in check_args()", -1));
 	return (0);
 }
 
-int main()
+int main(int argc, char **argv)
 {
 	t_var	v;
 	t_fork	**f;
 	t_phil	**phil;
 
-	if (check_args(&v))// The main() arguments will be added
+	memset(&v, 0, sizeof(t_var));
+	if (check_args(&v, argc, argv) || argc < 2 || argc > 6)
 		return (errno);
 	f = init_forks(&v);
 	if (!f)
@@ -125,7 +138,6 @@ int main()
 		free_mem(v.array_of_mallocs, v.counter_of_mallocs);
 		return (errno);
 	}
-	usleep(1000000 + 100000 * v.number_of_philosophers);
 	free_mem(v.array_of_mallocs, v.counter_of_mallocs);
 	return (0);
 }
