@@ -46,7 +46,7 @@ static int	islonglong(unsigned long nbr, int sign)
 {
 	if (nbr >= LLONG_MAX && sign > 0)
 		return (-1);
-	else if (nbr > LONG_LONG_MAX)
+	else if (nbr > LLONG_MAX)
 		return (0);
 	return ((int)nbr);
 }
