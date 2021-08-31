@@ -6,7 +6,7 @@
 /*   By: mclam <mclam@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/21 17:21:19 by mclam             #+#    #+#             */
-/*   Updated: 2021/08/21 17:21:19 by mclam            ###   ########.fr       */
+/*   Updated: 2021/09/01 02:22:44 by mclam            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,9 +45,9 @@ int	eating(t_phil *phil)
 	while (get_time(phil->time_start) - time_start_eat < phil->v->time_to_eat)
 	{
 		usleep(TIME_INTERVAL);
-//		phil->meal = LONG_MAX;
-//		ft_swap(&phil->meal, &phil->belly);
-//		ft_swap(&phil->belly, &phil->feces);
+		phil->meal = LONG_MAX;
+		ft_swap(&phil->meal, &phil->belly);
+		ft_swap(&phil->belly, &phil->feces);
 		phil->feces = 0;
 	}
 	pthread_mutex_lock(&phil->mutex_t_eat);

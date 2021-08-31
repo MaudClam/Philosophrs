@@ -6,7 +6,7 @@
 /*   By: mclam <mclam@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/17 15:01:14 by mclam             #+#    #+#             */
-/*   Updated: 2021/08/17 15:01:14 by mclam            ###   ########.fr       */
+/*   Updated: 2021/09/01 02:22:35 by mclam            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ t_fork	**init_forks(t_var *v)
 
 int	check_args(t_var *v, int argc, char **argv)
 {
-	if (argc < 2 || argc > 6)
+	if (argc < 5 || argc > 6)
 		return (!msg_bad_arguments());
 	v->pnu = ft_atoi(argv[1]);
 	if (v->pnu < 1 || v->pnu > 200)
@@ -123,7 +123,7 @@ int	main(int argc, char **argv)
 	t_phil	**phil;
 
 	memset(&v, 0, sizeof(t_var));
-	if (check_args(&v, argc, argv) || argc < 2 || argc > 6)
+	if (check_args(&v, argc, argv))
 		return (errno);
 	f = init_forks(&v);
 	if (!f)

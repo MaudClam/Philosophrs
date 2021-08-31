@@ -26,14 +26,16 @@ $(NAME) :	$(OBJS)
 			$(CC) $(CFLAGS) -o $(NAME) $(OBJS)
 
 clean :
-			rm -f $(OBJS) $(HEADER).gch
+			@rm -f $(OBJS) $(HEADER).gch
+			@echo "Make clean done"
 
 fclean 	:	clean
-			rm -f $(NAME)
+			@rm -f $(NAME)
+			@echo "Make fclean done"
 
 re :		fclean all
 
 norm:
-			norminette *.c *.h
+			@norminette *.c *.h
 
 .PHONY :	all clean fclean re norm
