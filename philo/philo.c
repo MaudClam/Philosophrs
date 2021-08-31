@@ -44,10 +44,10 @@ int	eating(t_phil *phil)
 	print_msg(get_time(phil->time_start), phil, MSG_EATING);
 	while (get_time(phil->time_start) - time_start_eat < phil->v->time_to_eat)
 	{
-		usleep(MONITORING_INTERVAL);
-		phil->meal = LONG_MAX;
-		ft_swap(&phil->meal, &phil->belly);
-		ft_swap(&phil->belly, &phil->feces);
+		usleep(TIME_INTERVAL);
+//		phil->meal = LONG_MAX;
+//		ft_swap(&phil->meal, &phil->belly);
+//		ft_swap(&phil->belly, &phil->feces);
 		phil->feces = 0;
 	}
 	pthread_mutex_lock(&phil->mutex_t_eat);

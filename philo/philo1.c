@@ -24,7 +24,7 @@ void	game_over(t_var *v, t_phil **phil)
 
 	while (TRUE)
 	{
-		usleep(MONITORING_INTERVAL);
+		usleep(TIME_INTERVAL);
 		i = 0;
 		counter = 0;
 		while (i < v->pnu)

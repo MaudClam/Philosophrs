@@ -18,7 +18,7 @@ int	death_monitor(t_var *v, t_phil **phil)
 
 	while (TRUE)
 	{
-		usleep(MONITORING_INTERVAL);
+		usleep(TIME_INTERVAL);
 		i = 0;
 		while (i < v->pnu)
 		{
@@ -117,7 +117,7 @@ int	start_threads(t_var *v, t_phil **phil)
 			break ;
 		}
 		phil[i]->time_start = get_time(0);
-		usleep(MONITORING_INTERVAL);
+		usleep(TIME_INTERVAL);
 		i++;
 	}
 	detach_threads(v, phil, v->pnu);

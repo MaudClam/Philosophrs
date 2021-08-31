@@ -30,8 +30,8 @@
 #  define MAX_NUM_OF_THREADS INT_MAX
 # endif
 
-# ifndef MONITORING_INTERVAL
-#  define MONITORING_INTERVAL 500
+# ifndef TIME_INTERVAL
+#  define TIME_INTERVAL 500
 # endif
 
 # define TRUE					1
