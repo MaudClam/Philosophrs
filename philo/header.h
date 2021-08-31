@@ -34,8 +34,8 @@
 #  define MAX_NUM_OF_THREADS INT_MAX
 # endif
 
-# ifndef INTERVAL_OF_DEATH_MONITORING
-#  define INTERVAL_OF_DEATH_MONITORING 500
+# ifndef MONITORING_INTERVAL
+#  define MONITORING_INTERVAL 500
 # endif
 
 # define N						v->number_of_philosophers

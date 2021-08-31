@@ -19,7 +19,7 @@ void	game_over(t_var *v, t_phil **phil)
 
 	while (TRUE)
 	{
-		usleep(INTERVAL_OF_DEATH_MONITORING);
+		usleep(MONITORING_INTERVAL);
 		i = 0;
 		counter = 0;
 		while (i < N)
