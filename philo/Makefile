@@ -36,6 +36,6 @@ fclean 	:	clean
 re :		fclean all
 
 norm:
-			@norminette *.c *.h
+			norminette *.c *.h
 
 .PHONY :	all clean fclean re norm

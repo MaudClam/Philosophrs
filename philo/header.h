@@ -98,7 +98,7 @@ void	print_msg(long time, t_phil *phil, char *msg);
 long	get_time(long start);
 void	it_is_death(long time, t_phil *phil);
 void	game_over(t_var *v, t_phil **phil);
-int		left(int i, int n);
+int		left(int right, int n);
 /*
 **		Thread functions, threads.c
 */

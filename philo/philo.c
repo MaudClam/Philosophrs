@@ -57,36 +57,36 @@ int	eating(t_phil *phil)
 	return (TRUE);
 }
 
-int	put_forks(int i, t_phil *phil)
+int	put_forks(int right, t_phil *phil)
 {
-	if (left(i, phil->v->pnu) > i)
+	if (left(right, phil->v->pnu) > right)
 	{
-		pthread_mutex_unlock(&phil->f[left(i, phil->v->pnu)]->mutex_fork);
-		pthread_mutex_unlock(&phil->f[i]->mutex_fork);
+		pthread_mutex_unlock(&phil->f[left(right, phil->v->pnu)]->mutex_fork);
+		pthread_mutex_unlock(&phil->f[right]->mutex_fork);
 		print_msg(get_time(phil->time_start), phil, MSG_SLEEPING);
 	}
 	else
 	{
-		pthread_mutex_unlock(&phil->f[i]->mutex_fork);
-		pthread_mutex_unlock(&phil->f[left(i, phil->v->pnu)]->mutex_fork);
+		pthread_mutex_unlock(&phil->f[right]->mutex_fork);
+		pthread_mutex_unlock(&phil->f[left(right, phil->v->pnu)]->mutex_fork);
 		print_msg(get_time(phil->time_start), phil, MSG_SLEEPING);
 	}
 	return (TRUE);
 }
 
-int	take_forks(int i, t_phil *phil)
+int	take_forks(int right, t_phil *phil)
 {
-	if (left(i, phil->v->pnu) < i)
+	if (left(right, phil->v->pnu) < right)
 	{
-		pthread_mutex_lock(&phil->f[left(i, phil->v->pnu)]->mutex_fork);
+		pthread_mutex_lock(&phil->f[left(right, phil->v->pnu)]->mutex_fork);
 		print_msg(get_time(phil->time_start), phil, MSG_TAKEN_FORK);
-		pthread_mutex_lock(&phil->f[i]->mutex_fork);
+		pthread_mutex_lock(&phil->f[right]->mutex_fork);
 	}
-	else if (left(i, phil->v->pnu) > i)
+	else if (left(right, phil->v->pnu) > right)
 	{
-		pthread_mutex_lock(&phil->f[i]->mutex_fork);
+		pthread_mutex_lock(&phil->f[right]->mutex_fork);
 		print_msg(get_time(phil->time_start), phil, MSG_TAKEN_FORK);
-		pthread_mutex_lock(&phil->f[left(i, phil->v->pnu)]->mutex_fork);
+		pthread_mutex_lock(&phil->f[left(right, phil->v->pnu)]->mutex_fork);
 	}
 	else
 		return (FALSE);
