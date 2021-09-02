@@ -112,18 +112,17 @@ int	start_threads(t_var *v, t_phil **phil)
 	time_start = get_time(0);
 	while (i < v->pnu)
 	{
-		if (i == MAX_NUM_OF_THREADS || \
+		phil[i]->time_start = time_start;
+		if (i == TEST_NUM_OF_THREADS || \
 			pthread_create(&phil[i]->th, NULL, (void *)&philosopher, phil[i]))
 		{
+			v->pnu = i;
 			errmsg_mutex("Faled to create thread", errno, v);
 			break ;
 		}
-		phil[i]->time_start = time_start;
 		usleep(TIME_INTERVAL);
 		i++;
 	}
 	detach_threads(v, phil, v->pnu);
-	death_monitor(v, phil);
-	destroy_mutexes(v->array_of_mutexes, v->counter_of_mutexes);
-	return (0);
+	return (death_monitor(v, phil));
 }
