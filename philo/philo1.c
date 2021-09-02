@@ -22,7 +22,7 @@ void	game_over(t_var *v, t_phil **phil)
 	int		i;
 	int		counter;
 
-	while (TRUE)
+	while (v->pnu)
 	{
 		usleep(TIME_INTERVAL);
 		i = 0;
