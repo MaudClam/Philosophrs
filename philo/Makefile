@@ -16,14 +16,17 @@ CC =		gcc
 
 CFLAGS =	-Wall -Wextra -Werror -pthread
 
+# The test flag is taken from the command line, for example:
+# make re TEST="-D TIME_INTERVAL=100"
+
 %.o:		%.c $(HEADER)
-			$(CC) $(CFLAGS) -c $< -o $(<:.c=.o)
+			$(CC) $(CFLAGS) $(TEST) -c $< -o $(<:.c=.o)
 
 all :		$(NAME)
 			@echo "Make done"
 
 $(NAME) :	$(OBJS)
-			$(CC) $(CFLAGS) -o $(NAME) $(OBJS)
+			$(CC) $(CFLAGS) $(TEST) -o $(NAME) $(OBJS)
 
 clean :
 			@rm -f $(OBJS) $(HEADER).gch
