@@ -23,12 +23,12 @@ int	death_monitor(t_var *v, t_phil **phil)
 		while (i < v->pnu)
 		{
 			pthread_mutex_lock(&phil[i]->mutex_t_eat);
-			if (get_time(phil[i]->time_start) - phil[i]->time_last_ate >= \
+			if (getime(v->time_start) - phil[i]->time_last_ate >= \
 														phil[i]->v->time_to_die)
 			{
 				if (phil[i]->eat_counter != \
 				phil[i]->v->number_of_times_each_philosopher_must_eat)
-					it_is_death(get_time(phil[i]->time_start), phil[i]);
+					it_is_death(getime(v->time_start), phil[i]);
 				pthread_mutex_unlock(&phil[i]->mutex_t_eat);
 				game_over(v, phil);
 				return (200);
@@ -101,25 +101,23 @@ int	init_mutexes(t_var *v, t_phil **phil)
 
 int	start_threads(t_var *v, t_phil **phil)
 {
-	long	time_start;
 	int		i;
 
 	if (init_mutexes(v, phil))
 		return (-1);
 	i = 0;
-	time_start = get_time(0);
+	v->time_start = getime(0);
 	while (i < v->pnu)
 	{
-		phil[i]->time_start = time_start;
-		if (i == TEST_NUM_OF_THREADS)
+		if (i != TEST_NUM_OF_THREADS && \
+			!pthread_create(&phil[i]->th, NULL, (void *)&philosopher, phil[i]))
+			usleep(TIME_INTERVAL);
+		else
 		{
 			v->pnu = i;
 			errmsg_mutex("Faled to create thread", errno, v);
 			break ;
 		}
-		else
-			pthread_create(&phil[i]->th, NULL, (void *)&philosopher, phil[i]);
-		usleep(TIME_INTERVAL);
 		i++;
 	}
 	detach_threads(v, phil, v->pnu);

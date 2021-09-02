@@ -57,7 +57,7 @@ void	it_is_death(long time, t_phil *phil)
 void	print_msg(long time, t_phil *phil, char *msg)
 {
 	if (phil->v->number_of_times_each_philosopher_must_eat != 0 && \
-	 get_time(phil->time_start) - phil->time_last_ate < phil->v->time_to_die)
+	getime(phil->v->time_start) - phil->time_last_ate < phil->v->time_to_die)
 	{
 		pthread_mutex_lock(&phil->v->mutex_stdout);
 		printf("%ld %d%s", time, phil->id, msg);
@@ -65,7 +65,7 @@ void	print_msg(long time, t_phil *phil, char *msg)
 	}
 }
 
-long	get_time(long start)
+long	getime(long start)
 {
 	struct timeval	tv;
 
