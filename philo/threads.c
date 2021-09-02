@@ -100,6 +100,7 @@ int	init_mutexes(t_var *v, t_phil **phil)
 
 int	start_threads(t_var *v, t_phil **phil)
 {
+	long	time_start;
 	int		i;
 
 	if (init_mutexes(v, phil))
@@ -108,6 +109,7 @@ int	start_threads(t_var *v, t_phil **phil)
 		return (-1);
 	}
 	i = 0;
+	time_start = get_time(0);
 	while (i < v->pnu)
 	{
 		if (i == MAX_NUM_OF_THREADS || \
@@ -116,7 +118,7 @@ int	start_threads(t_var *v, t_phil **phil)
 			errmsg_mutex("Faled to create thread", errno, v);
 			break ;
 		}
-		phil[i]->time_start = get_time(0);
+		phil[i]->time_start = time_start;
 		usleep(TIME_INTERVAL);
 		i++;
 	}
