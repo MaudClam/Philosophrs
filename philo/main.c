@@ -95,19 +95,18 @@ int	check_args(t_var *v, int argc, char **argv)
 	if (v->pnu < 1 || v->pnu > 200)
 		return (!msg_bad_arguments());
 	v->time_to_die = ft_atoi(argv[2]);
-	if (v->time_to_die < 60 || v->time_to_die > INT_MAX)
+	if (v->time_to_die < 60)
 		return (!msg_bad_arguments());
 	v->time_to_eat = ft_atoi(argv[3]);
-	if (v->time_to_eat < 60 || v->time_to_die > INT_MAX)
+	if (v->time_to_eat < 60)
 		return (!msg_bad_arguments());
 	v->time_to_sleep = ft_atoi(argv[4]);
-	if (v->time_to_sleep < 60 || v->time_to_die > INT_MAX)
+	if (v->time_to_sleep < 60)
 		return (!msg_bad_arguments());
 	v->number_of_times_each_philosopher_must_eat = INT_MAX;
 	if (argc == 6)
 		v->number_of_times_each_philosopher_must_eat = ft_atoi(argv[5]);
-	if (v->number_of_times_each_philosopher_must_eat < 1 || \
-						v->number_of_times_each_philosopher_must_eat > INT_MAX)
+	if (v->number_of_times_each_philosopher_must_eat < 1)
 		return (!msg_bad_arguments());
 	v->array_of_mallocs = smart_calloc(NULL, NUMBER_OF_MALLOCS, \
 					&v->counter_of_mallocs, sizeof(void *) * NUMBER_OF_MALLOCS);
