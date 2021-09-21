@@ -36,6 +36,9 @@
 
 # define TRUE					1
 # define FALSE					0
+# define ERROR					-1
+# define SUCCESS				0
+# define GAME_OVER				200
 # define MSG_TAKEN_FORK			"\033[33m has taken a fork\033[0m\n"
 # define MSG_EATING				"\033[32m is eating\033[0m\n"
 # define MSG_SLEEPING			"\033[37m is sleeping\033[0m\n"
@@ -105,8 +108,8 @@ int		left(int right, int n);
 int		start_threads(t_var *v, t_phil **phil);
 int		init_mutexes(t_var *v, t_phil **phil);
 int		init_mutex(void **a, int a_size, int *counter, pthread_mutex_t *mutex);
-int		detach_threads(t_var *v, t_phil **phil, int counter);
-int		death_monitor(t_var *v, t_phil **phil);
+void	detach_threads(t_var *v, t_phil **phil, int counter);
+void	death_monitor(t_var *v, t_phil **phil);
 /*
 **		Initialization functions, main.c
 */

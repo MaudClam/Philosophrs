@@ -29,8 +29,8 @@ int	init_variables(t_var *v, t_fork **f, t_phil **phil)
 								NUMBER_OF_MALLOCS, &v->counter_of_mallocs, \
 								sizeof(pthread_mutex_t) * (v->pnu * 2 + 1));
 	if (!v->array_of_mutexes)
-		return (errmsg("smart_calloc()[5] error in  init_variables()", -1));
-	return (0);
+		return (errmsg("smart_calloc()[5] error in  init_variables()", ERROR));
+	return (SUCCESS);
 }
 
 t_phil	**init_phil(t_var *v)
@@ -43,14 +43,14 @@ t_phil	**init_phil(t_var *v)
 							&v->counter_of_mallocs, sizeof(t_phil) * v->pnu);
 	if (!phil)
 	{
-		errmsg("smart_calloc()[3] error in init_phil()", -1);
+		errmsg("smart_calloc()[3] error in init_phil()", ERROR);
 		return (NULL);
 	}
 	phil_pt = smart_calloc(v->array_of_mallocs, NUMBER_OF_MALLOCS, \
 					&v->counter_of_mallocs, sizeof(t_phil *) * (v->pnu + 1));
 	if (!phil_pt)
 	{
-		errmsg("smart_calloc()[4] error in init_phil()", -1);
+		errmsg("smart_calloc()[4] error in init_phil()", ERROR);
 		return (NULL);
 	}
 	i = v->pnu;
@@ -70,14 +70,14 @@ t_fork	**init_forks(t_var *v)
 					&v->counter_of_mallocs, sizeof(t_fork) * v->pnu);
 	if (!s)
 	{
-		errmsg("smart_calloc()[1] error in init_forks()", -1);
+		errmsg("smart_calloc()[1] error in init_forks()", ERROR);
 		return (NULL);
 	}
 	pt_s = smart_calloc(v->array_of_mallocs, NUMBER_OF_MALLOCS, \
 					&v->counter_of_mallocs, sizeof(t_fork *) * (v->pnu + 1));
 	if (!pt_s)
 	{
-		errmsg("smart_calloc()[2] error in init_forks()", -1);
+		errmsg("smart_calloc()[2] error in init_forks()", ERROR);
 		return (NULL);
 	}
 	i = v->pnu;
@@ -90,29 +90,29 @@ t_fork	**init_forks(t_var *v)
 int	check_args(t_var *v, int argc, char **argv)
 {
 	if (argc < 5 || argc > 6)
-		return (!msg_bad_arguments());
+		return (msg_bad_arguments());
 	v->pnu = ft_atoi(argv[1]);
 	if (v->pnu < 1 || v->pnu > 200)
-		return (!msg_bad_arguments());
+		return (msg_bad_arguments());
 	v->time_to_die = ft_atoi(argv[2]);
 	if (v->time_to_die < 60)
-		return (!msg_bad_arguments());
+		return (msg_bad_arguments());
 	v->time_to_eat = ft_atoi(argv[3]);
 	if (v->time_to_eat < 60)
-		return (!msg_bad_arguments());
+		return (msg_bad_arguments());
 	v->time_to_sleep = ft_atoi(argv[4]);
 	if (v->time_to_sleep < 60)
-		return (!msg_bad_arguments());
+		return (msg_bad_arguments());
 	v->number_of_times_each_philosopher_must_eat = INT_MAX;
 	if (argc == 6)
 		v->number_of_times_each_philosopher_must_eat = ft_atoi(argv[5]);
 	if (v->number_of_times_each_philosopher_must_eat < 1)
-		return (!msg_bad_arguments());
+		return (msg_bad_arguments());
 	v->array_of_mallocs = smart_calloc(NULL, NUMBER_OF_MALLOCS, \
 					&v->counter_of_mallocs, sizeof(void *) * NUMBER_OF_MALLOCS);
 	if (!v->array_of_mallocs)
-		return (errmsg("smart_calloc()[0] error in check_args()", -1));
-	return (0);
+		return (errmsg("smart_calloc()[0] error in check_args()", ERROR));
+	return (SUCCESS);
 }
 
 int	main(int argc, char **argv)
@@ -122,20 +122,20 @@ int	main(int argc, char **argv)
 	t_phil	**phil;
 
 	memset(&v, 0, sizeof(t_var));
-	if (check_args(&v, argc, argv))
-		return (errno);
+	if (check_args(&v, argc, argv) == ERROR)
+		return (ERROR);
 	f = init_forks(&v);
 	if (!f)
-		return (errno);
+		return (ERROR);
 	phil = init_phil(&v);
 	if (!phil)
-		return (errno);
-	if (init_variables(&v, f, phil))
-		return (errno);
-	if (start_threads(&v, phil))
+		return (ERROR);
+	if (init_variables(&v, f, phil) == ERROR)
+		return (ERROR);
+	if (start_threads(&v, phil) == ERROR)
 	{
 		free_mem(v.array_of_mallocs, v.counter_of_mallocs);
-		return (errno);
+		return (ERROR);
 	}
 	free_mem(v.array_of_mallocs, v.counter_of_mallocs);
 	return (0);

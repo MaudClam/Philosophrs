@@ -28,7 +28,7 @@ synchronization problems.\n\
 The tutorial project was written by Maud Clam [mclam@student.21-school.ru] \
 in pure C without a single nail.\n\
 For more details, see: https://profile.intra.42.fr/searches\n\n");
-	return (0);
+	return (ERROR);
 }
 
 void	ft_swap(long *a, long *b)

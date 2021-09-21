@@ -101,7 +101,10 @@ void	*philosopher(t_phil *phil)
 		if (take_forks(phil->i, phil) == FALSE)
 			break ;
 		if (eating(phil) == FALSE)
+		{
+			put_forks(phil->i, phil);
 			break ;
+		}
 		put_forks(phil->i, phil);
 		if (sleeping(phil) == FALSE)
 			break ;

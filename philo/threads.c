@@ -12,7 +12,7 @@
 
 #include "header.h"
 
-int	death_monitor(t_var *v, t_phil **phil)
+void	death_monitor(t_var *v, t_phil **phil)
 {
 	int		i;
 
@@ -31,16 +31,15 @@ int	death_monitor(t_var *v, t_phil **phil)
 					it_is_death(getime(v->time_start), phil[i]);
 				pthread_mutex_unlock(&phil[i]->mutex_t_eat);
 				game_over(v, phil);
-				return (200);
+				return ;
 			}
 			pthread_mutex_unlock(&phil[i]->mutex_t_eat);
 			i++;
 		}
 	}
-	return (0);
 }
 
-int	detach_threads(t_var *v, t_phil **phil, int counter)
+void	detach_threads(t_var *v, t_phil **phil, int counter)
 {
 	int	i;
 
@@ -49,13 +48,11 @@ int	detach_threads(t_var *v, t_phil **phil, int counter)
 	{
 		if (pthread_detach(phil[i]->th))
 		{
-			v->pnu = i;
-			errmsg_mutex("Faled to detach thread", errno, v);
-			break ;
+			errmsg_mutex("Faled to detach thread", ERROR, v);
+			return ;
 		}
 		i++;
 	}
-	return (0);
 }
 
 int	init_mutex(void **a, int a_size, int *counter, pthread_mutex_t *mutex)
@@ -65,7 +62,7 @@ int	init_mutex(void **a, int a_size, int *counter, pthread_mutex_t *mutex)
 		if (pthread_mutex_init(mutex, NULL))
 		{
 			destroy_mutexes(a, *counter);
-			return (-1);
+			return (ERROR);
 		}
 		a[*counter] = mutex;
 		(*counter)++;
@@ -73,9 +70,9 @@ int	init_mutex(void **a, int a_size, int *counter, pthread_mutex_t *mutex)
 	else
 	{
 		destroy_mutexes(a, *counter);
-		return (-1);
+		return (ERROR);
 	}
-	return (0);
+	return (SUCCESS);
 }
 
 int	init_mutexes(t_var *v, t_phil **phil)
@@ -85,18 +82,18 @@ int	init_mutexes(t_var *v, t_phil **phil)
 	i = 0;
 	if (init_mutex(v->array_of_mutexes, (v->pnu * 2 + 1), \
 									&v->counter_of_mutexes, &v->mutex_stdout))
-		return (errmsg("init_mutexes()1 error in init_mutexess()", -1));
+		return (errmsg("init_mutexes()1 error in init_mutexess()", ERROR));
 	while (i < v->pnu)
 	{
 		if (init_mutex(v->array_of_mutexes, (v->pnu * 2 + 1), \
 						&v->counter_of_mutexes, &phil[i]->f[i]->mutex_fork))
-			return (errmsg("init_mutexes()2 error in init_mutexess()", -1));
+			return (errmsg("init_mutexes()2 error in init_mutexess()", ERROR));
 		if (init_mutex(v->array_of_mutexes, (v->pnu * 2 + 1), \
 								&v->counter_of_mutexes, &phil[i]->mutex_t_eat))
-			return (errmsg("init_mutexes()3 error in init_mutexess()", -1));
+			return (errmsg("init_mutexes()3 error in init_mutexess()", ERROR));
 		i++;
 	}
-	return (0);
+	return (SUCCESS);
 }
 
 int	start_threads(t_var *v, t_phil **phil)
@@ -104,7 +101,7 @@ int	start_threads(t_var *v, t_phil **phil)
 	int		i;
 
 	if (init_mutexes(v, phil))
-		return (-1);
+		return (ERROR);
 	i = 0;
 	v->time_start = getime(0);
 	while (i < v->pnu)
@@ -114,14 +111,14 @@ int	start_threads(t_var *v, t_phil **phil)
 			usleep(TIME_INTERVAL);
 		else
 		{
-			v->pnu = i;
-			errmsg_mutex("Faled to create thread", errno, v);
-			break ;
+			errmsg_mutex("Faled to create thread", ERROR, v);
+			destroy_mutexes(v->array_of_mutexes, v->counter_of_mutexes);
+			return (ERROR);
 		}
 		i++;
 	}
 	detach_threads(v, phil, v->pnu);
 	death_monitor(v, phil);
 	destroy_mutexes(v->array_of_mutexes, v->counter_of_mutexes);
-	return (0);
+	return (SUCCESS);
 }
