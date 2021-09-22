@@ -14,7 +14,7 @@
 
 int	sleeping(t_phil *phil)
 {
-	long	time_start_sleep;
+	time_t	time_start_sleep;
 
 	time_start_sleep = getime(phil->v->time_start);
 	while (getime(phil->v->time_start) - time_start_sleep < \

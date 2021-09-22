@@ -46,7 +46,7 @@ void	game_over(t_var *v, t_phil **phil)
 	}
 }
 
-void	it_is_death(long time, t_phil *phil)
+void	it_is_death(time_t time, t_phil *phil)
 {
 	phil->v->number_of_times_each_philosopher_must_eat = 0;
 	pthread_mutex_lock(&phil->v->mutex_stdout);
@@ -54,7 +54,7 @@ void	it_is_death(long time, t_phil *phil)
 	pthread_mutex_unlock(&phil->v->mutex_stdout);
 }
 
-void	print_msg(long time, t_phil *phil, char *msg)
+void	print_msg(time_t time, t_phil *phil, char *msg)
 {
 	if (phil->v->number_of_times_each_philosopher_must_eat != 0 && \
 	getime(phil->v->time_start) - phil->time_last_ate < phil->v->time_to_die)
@@ -65,7 +65,7 @@ void	print_msg(long time, t_phil *phil, char *msg)
 	}
 }
 
-long	getime(long start)
+time_t	getime(time_t start)
 {
 	struct timeval	tv;
 

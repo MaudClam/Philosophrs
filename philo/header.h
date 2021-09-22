@@ -58,7 +58,7 @@ struct				s_var
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				number_of_times_each_philosopher_must_eat;
-	long			time_start;
+	time_t			time_start;
 	void			**array_of_mallocs;
 	int				counter_of_mallocs;
 	void			**array_of_mutexes;
@@ -75,11 +75,11 @@ struct				s_phil
 {
 	int				i;
 	int				id;
-	long			meal;
-	long			belly;
-	long			feces;
+	time_t			meal;
+	time_t			belly;
+	time_t			feces;
 	int				eat_counter;
-	long			time_last_ate;
+	time_t			time_last_ate;
 	char			thread_compltd;
 	pthread_mutex_t	mutex_t_eat;
 	pthread_t		th;
@@ -97,9 +97,9 @@ int		sleeping(t_phil *phil);
 /*
 **		Philosopher functions, philo1.c
 */
-void	print_msg(long time, t_phil *phil, char *msg);
-long	getime(long start);
-void	it_is_death(long time, t_phil *phil);
+void	print_msg(time_t time, t_phil *phil, char *msg);
+time_t	getime(time_t start);
+void	it_is_death(time_t time, t_phil *phil);
 void	game_over(t_var *v, t_phil **phil);
 int		left(int right, int n);
 /*
@@ -135,7 +135,7 @@ void	ft_putnbr_fd(int n, int fd);
 /*
 **		Secondary functions, utils2.c
 */
-void	ft_swap(long *a, long *b);
+void	ft_swap(time_t *a, time_t *b);
 int		ft_atoi(const char *str);
 int		msg_bad_arguments(void);
 
