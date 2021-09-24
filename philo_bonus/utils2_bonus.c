@@ -15,7 +15,7 @@
 int	msg_bad_arguments(void)
 {
 	printf("\033[1mBad arguments\033[0m\nusage:\
-\t\033[1mphilo\033[0m number_of_philosophers time_to_die time_to_eat \
+\t\033[1mphilo_bonus\033[0m number_of_philosophers time_to_die time_to_eat \
 time_to_sleep [number_of_times_each_philosopher_must_eat]\n\n\
 \t\033[1mnumber_of_philosophers\033[0m - number of philosophers from 1 to 200\n\
 \t\033[1mtime_to_die\033[0m - time in milliseconds from 60 to INT_MAX\n\
