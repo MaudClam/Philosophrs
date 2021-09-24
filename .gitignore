@@ -4,7 +4,6 @@
 *.zip
 *xcode*
 build*
-philo
 a.out
 *gch
 *zip
