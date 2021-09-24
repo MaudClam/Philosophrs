@@ -14,33 +14,52 @@
 
 void	start_processes(t_var *v)
 {
-	int	status;
-	
-	status = 0;
-	v->pids[0] = getpid();
 	v->time_start = getime(0);
 	while (v->phil_id++ < v->num_of_phils)
 	{
 		v->pids[v->phil_id] = fork();
 		if (v->pids[v->phil_id] == ERROR)
-			exit(errmsg("fork() call error in start_processes()", errno));
+		{
+			errmsg("fork() call error in start_processes()", errno);
+			kill_phill(v);
+			return ;
+		}
 		else if (v->pids[v->phil_id] == SUCCESS)
 			philosopher(v);
 		else
 			usleep(TIME_INTERVAL);
 	}
-	waitpid(-1, &status, 0);
-	if (WIFEXITED(status) == 0)
+	waitpid(-1, &v->status, 0);
+	if (v->status != 0)
 	{
-		printf(MSG_GAME_OVER_GREEN);
-		while (v->phil_id)
-			kill(v->pids[v->phil_id--], SIGKILL);
+		kill_phill(v);
+		ft_putstr_fd(MSG_GAME_OVER_RED, STDOUT_FILENO);
 	}
+	else
+	{
+		sem_wait(v->sem_stdout);
+		ft_putstr_fd(MSG_GAME_OVER_GREEN, STDOUT_FILENO);
+		kill_phill(v);
+//		sem_wait(v->sem_stdout);
+	}
+}
+
+void	free_mem(t_var *v)
+{
+	free(v->pids);
+	v->pids = NULL;
+	if (v->sem_forks && sem_close(v->sem_forks) == EINVAL)
+		errmsg("v->sem_forks is not a valid semaphore descriptor", errno);
+	if (v->sem_stdout && sem_close(v->sem_stdout) == EINVAL)
+		errmsg("v->sem_stdout is not a valid semaphore descriptor",errno);
+	sem_unlink(SEM_FORKS);
+	sem_unlink(SEM_STDOUT);
 }
 
 void	open_semaphores(t_var *v)
 {
-	v->sem_forks = sem_open("forks", O_CREAT, S_IRWXU, \
+	sem_unlink(SEM_FORKS);
+	v->sem_forks = sem_open(SEM_FORKS, O_CREAT, S_IRWXU, \
 												(unsigned int)v->num_of_phils);
 	if (v->sem_forks == SEM_FAILED)
 	{
@@ -48,31 +67,13 @@ void	open_semaphores(t_var *v)
 		free_mem(v);
 		exit(errmsg("sem_open()[0] error in open_semaphores()", ERROR));
 	}
-	v->sem_stdout = sem_open("stdout", O_CREAT);
+	sem_unlink(SEM_STDOUT);
+	v->sem_stdout = sem_open(SEM_STDOUT, O_CREAT, S_IRWXU, 1);
 	if (v->sem_stdout == SEM_FAILED)
 	{
 		v->sem_forks = NULL;
 		free_mem(v);
 		exit(errmsg("sem_open()[1] error in open_semaphores()", ERROR));
-	}
-}
-
-void	free_mem(t_var *v)
-{
-	free(v->pids);
-	if (v->sem_forks)
-	{
-		if (sem_close(v->sem_forks) == EINVAL)
-			errmsg("v->sem_forks is not a valid semaphore descriptor", errno);
-		if (sem_unlink("forks") != SUCCESS)
-			errmsg("sem_unlink(\"forks\") error in free_mem()", errno);
-	}
-	if (v->sem_stdout)
-	{
-		if (sem_close(v->sem_stdout) == EINVAL)
-			errmsg("v->sem_stdout is not a valid semaphore descriptor",errno);
-		if (sem_unlink("stdout") != SUCCESS)
-			errmsg("sem_unlink(\"stdout\") error in free_mem()",errno);
 	}
 }
 
@@ -110,7 +111,8 @@ int	main(int argc, char **argv)
 	v.pids = (pid_t *)malloc(sizeof(pid_t) * (v.num_of_phils + 1));
 	if (!v.pids)
 		exit(errmsg("malloc() error in main_bonus()", errno));
-	memset(v.pids, 0, sizeof(pid_t) * (v.num_of_phils + 1));
+	memset(v.pids, -1, sizeof(pid_t) * (v.num_of_phils + 1));
+	open_semaphores(&v);
 	start_processes(&v);
 	free_mem(&v);
 	exit(SUCCESS);

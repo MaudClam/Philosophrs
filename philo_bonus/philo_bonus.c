@@ -14,28 +14,21 @@
 
 int	philosopher(t_var *v)
 {
-	open_semaphores(v);
 	while (v->eat_counter < v->num_of_times_each_phil_must_eat)
 	{
 		if (take_forks(v) == ERROR)
-		{
-			print_msg(getime(v->time_start), v, MSG_DIED);
-			exit(ERROR);
-		}
+			print_msg_died_and_exit(getime(v->time_start), v, ERROR);
 		if (eating(v) == ERROR)
 		{
 			put_forks(v);
-			print_msg(getime(v->time_start), v, MSG_DIED);
-			exit(ERROR);
+			print_msg_died_and_exit(getime(v->time_start), v, ERROR);
 		}
 		put_forks(v);
 		if (sleeping(v) == ERROR)
-		{
-			print_msg(getime(v->time_start), v, MSG_DIED);
-			exit(ERROR);
-		}
+			print_msg_died_and_exit(getime(v->time_start), v, ERROR);
 		print_msg(getime(v->time_start), v, MSG_THINKING);
 	}
+	free_mem(v);
 	exit(SUCCESS);
 }
 
@@ -78,7 +71,8 @@ int	eating(t_var *v)
 		else
 			return (ERROR);
 	}
-	v->eat_counter++;
+	if (++v->eat_counter == INT_MAX)
+		v->eat_counter = 0;
 	return (SUCCESS);
 }
 

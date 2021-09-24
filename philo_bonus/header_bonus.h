@@ -34,14 +34,15 @@
 # endif
 
 # ifndef TIME_INTERVAL
-#  define TIME_INTERVAL 500
+#  define TIME_INTERVAL 50
 # endif
 
 # define TRUE					1
 # define FALSE					0
 # define ERROR					-1
 # define SUCCESS				0
-# define GAME_OVER				200
+# define SEM_FORKS				"./forks"
+# define SEM_STDOUT				"./stdout"
 # define MSG_TAKEN_FORK			"\033[33m has taken a fork\033[0m\n"
 # define MSG_EATING				"\033[32m is eating\033[0m\n"
 # define MSG_SLEEPING			"\033[37m is sleeping\033[0m\n"
@@ -59,6 +60,7 @@ typedef struct	s_var
 	int		num_of_times_each_phil_must_eat;
 	int		phil_id;
 	int		eat_counter;
+	int		status;
 	pid_t	*pids;
 	sem_t	*sem_forks;
 	sem_t	*sem_stdout;
@@ -78,7 +80,9 @@ int		sleeping(t_var *v);
 **		philo1_bonus.c
 */
 void	print_msg(time_t time, t_var *v, char *msg);
+void	print_msg_died_and_exit(time_t time, t_var *v, int err);
 time_t	getime(time_t start);
+void	kill_phill(t_var *v);
 /*
 **		main_bonus.c
 */

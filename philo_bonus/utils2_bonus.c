@@ -14,7 +14,7 @@
 
 int	msg_bad_arguments(void)
 {
-	printf("\033[1mBad arguments\033[0m\nusage:\
+	ft_putstr_fd("\033[1mBad arguments\033[0m\nusage:\
 \t\033[1mphilo_bonus\033[0m number_of_philosophers time_to_die time_to_eat \
 time_to_sleep [number_of_times_each_philosopher_must_eat]\n\n\
 \t\033[1mnumber_of_philosophers\033[0m - number of philosophers from 1 to 200\n\
@@ -27,7 +27,7 @@ Philosophers Problem\033[0m used in computer science to illustrate \
 synchronization problems.\n\
 The tutorial project was written by Maud Clam [mclam@student.21-school.ru] \
 in pure C without a single nail.\n\
-For more details, see: https://profile.intra.42.fr/searches\n\n");
+For more details: https://profile.intra.42.fr/searches\n\n", STDOUT_FILENO);
 	return (ERROR);
 }
 
