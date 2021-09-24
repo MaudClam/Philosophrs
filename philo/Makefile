@@ -26,7 +26,7 @@ all :		$(NAME)
 			@echo "Make done"
 
 $(NAME) :	$(OBJS)
-			$(CC) $(CFLAGS) $(TEST) -o $(NAME) $(OBJS)
+			$(CC) $(CFLAGS) $(TEST) $(OBJS) -o $(NAME)
 
 clean :
 			@rm -f $(OBJS) $(HEADER).gch

@@ -1,16 +1,14 @@
-NAME =		philo
+NAME =		philo_bonus
 
-SRCS =		main.c \
-			philo.c \
-			philo1.c \
-			threads.c \
-			utils.c \
-			utils1.c \
-			utils2.c
+SRCS =		main_bonus.c \
+			philo_bonus.c \
+			philo1_bonus.c \
+			utils1_bonus.c \
+			utils2_bonus.c
 			
 OBJS =		$(SRCS:.c=.o)
 
-HEADER = 	header.h
+HEADER = 	header_bonus.h
 
 CC =		gcc
 
@@ -26,7 +24,7 @@ all :		$(NAME)
 			@echo "Make done"
 
 $(NAME) :	$(OBJS)
-			$(CC) $(CFLAGS) $(TEST) -o $(NAME) $(OBJS)
+			$(CC) $(CFLAGS) $(TEST) $(OBJS) -o $(NAME)
 
 clean :
 			@rm -f $(OBJS) $(HEADER).gch
