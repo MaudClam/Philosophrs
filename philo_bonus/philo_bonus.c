@@ -26,6 +26,9 @@ void	philosopher(t_var *v)
 
 void	take_forks(t_var *v)
 {
+	time_t	time_start_bifurcate;
+	
+	time_start_bifurcate = getime(v->time_start);
 	if (v->num_of_phils > 1)
 	{
 		sem_wait(v->sem_forks);
@@ -37,8 +40,8 @@ void	take_forks(t_var *v)
 	}
 	else
 	{
-		print_msg(getime(v->time_start), v, MSG_TAKEN_FORK, YELLOW);
-		while (getime(v->time_start) < v->time_to_eat)
+		print_msg(time_start_bifurcate, v, MSG_TAKEN_FORK, YELLOW);
+		while (getime(v->time_start) - time_start_bifurcate < v->time_to_die)
 			usleep(TIME_INTERVAL);
 		print_msg_died_and_exit(getime(v->time_start), v, ERROR);
 	}
