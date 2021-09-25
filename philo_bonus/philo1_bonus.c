@@ -35,24 +35,14 @@ void	free_mem(t_var *v)
 void	print_msg(time_t time, t_var *v, char *msg, char *color)
 {
 	sem_wait(v->sem_stdout);
-	ft_putstr_fd(color, STDOUT_FILENO);
-	ft_putnbr_fd((int)time, STDOUT_FILENO);
-	ft_putchar_fd(' ', STDOUT_FILENO);
-	ft_putnbr_fd(v->phil_id, STDOUT_FILENO);
-	ft_putstr_fd(msg, STDOUT_FILENO);
-	ft_putstr_fd(DEFAULT_COLOR, STDOUT_FILENO);
+	printf("%s%ld %d %s"DEFAULT_COLOR, color, time, v->phil_id, msg);
 	sem_post(v->sem_stdout);
 }
 
 void	print_msg_died_and_exit(time_t time, t_var *v, int err)
 {
 	sem_wait(v->sem_stdout);
-	ft_putstr_fd(RED, STDOUT_FILENO);
-	ft_putnbr_fd((int)time, STDOUT_FILENO);
-	ft_putchar_fd(' ', STDOUT_FILENO);
-	ft_putnbr_fd(v->phil_id, STDOUT_FILENO);
-	ft_putstr_fd(MSG_DIED, STDOUT_FILENO);
-	ft_putstr_fd(DEFAULT_COLOR, STDOUT_FILENO);
+	printf(RED"%ld %d "MSG_DIED DEFAULT_COLOR, time, v->phil_id);
 	free_mem(v);
 	exit(err);
 }

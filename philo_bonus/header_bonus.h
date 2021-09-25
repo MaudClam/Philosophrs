@@ -49,11 +49,11 @@
 # define RED					"\033[31m"
 # define SEM_FORKS				"./forks"
 # define SEM_STDOUT				"./stdout"
-# define MSG_TAKEN_FORK			" has taken a fork\n"
-# define MSG_EATING				" is eating\n"
-# define MSG_SLEEPING			" is sleeping\n"
-# define MSG_THINKING			" is thinking\n"
-# define MSG_DIED				" is died\n"
+# define MSG_TAKEN_FORK			"has taken a fork\n"
+# define MSG_EATING				"is eating\n"
+# define MSG_SLEEPING			"is sleeping\n"
+# define MSG_THINKING			"is thinking\n"
+# define MSG_DIED				"is died\n"
 # define MSG_GAME_OVER			"====GAME OVER!====\n"
 
 typedef struct	s_var
