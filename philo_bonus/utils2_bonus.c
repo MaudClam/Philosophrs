@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils2.c                                           :+:      :+:    :+:   */
+/*   utils2_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mclam <mclam@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/29 12:27:18 by mclam             #+#    #+#             */
-/*   Updated: 2021/09/01 02:24:23 by mclam            ###   ########.fr       */
+/*   Updated: 2021/09/25 07:02:13 by mclam            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "header_bonus.h"
 
-int	msg_bad_arguments(void)
+int	msg_bad_arguments(int err)
 {
 	ft_putstr_fd("\033[1mBad arguments\033[0m\nusage:\
 \t\033[1mphilo_bonus\033[0m number_of_philosophers time_to_die time_to_eat \
@@ -28,7 +28,7 @@ synchronization problems.\n\
 The tutorial project was written by Maud Clam [mclam@student.21-school.ru] \
 in pure C without a single nail.\n\
 For more details: https://profile.intra.42.fr/searches\n\n", STDOUT_FILENO);
-	return (ERROR);
+	return (err);
 }
 
 int	errmsg(char *str, int err)

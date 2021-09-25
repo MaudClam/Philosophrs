@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   header_bonus.h                                           :+:      :+:    :+:   */
+/*   header_bonus.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mclam <mclam@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/17 15:02:18 by mclam             #+#    #+#             */
-/*   Updated: 2021/09/22 00:31:09 by mclam            ###   ########.fr       */
+/*   Updated: 2021/09/25 06:59:44 by mclam            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,15 +41,20 @@
 # define FALSE					0
 # define ERROR					-1
 # define SUCCESS				0
+# define DEFAULT_COLOR			"\033[0m"
+# define YELLOW					"\033[33m"
+# define GREEN					"\033[32m"
+# define GRAY					"\033[37m"
+# define TURQUOISE				"\033[36m"
+# define RED					"\033[31m"
 # define SEM_FORKS				"./forks"
 # define SEM_STDOUT				"./stdout"
-# define MSG_TAKEN_FORK			"\033[33m has taken a fork\033[0m\n"
-# define MSG_EATING				"\033[32m is eating\033[0m\n"
-# define MSG_SLEEPING			"\033[37m is sleeping\033[0m\n"
-# define MSG_THINKING			"\033[36m is thinking\033[0m\n"
-# define MSG_DIED				"\033[31m is died\033[0m\n"
-# define MSG_GAME_OVER_RED		"\033[31m====GAME OVER!====\033[0m\n"
-# define MSG_GAME_OVER_GREEN	"\033[32m====GAME OVER!====\033[0m\n"
+# define MSG_TAKEN_FORK			" has taken a fork\n"
+# define MSG_EATING				" is eating\n"
+# define MSG_SLEEPING			" is sleeping\n"
+# define MSG_THINKING			" is thinking\n"
+# define MSG_DIED				" is died\n"
+# define MSG_GAME_OVER			"====GAME OVER!====\n"
 
 typedef struct	s_var
 {
@@ -71,25 +76,26 @@ typedef struct	s_var
 /*
 **		philo_bonus.c
 */
-int		philosopher(t_var *v);
-int		take_forks(t_var *v);
+void	philosopher(t_var *v);
+void	take_forks(t_var *v);
+void	eating(t_var *v);
 void	put_forks(t_var *v);
-int		eating(t_var *v);
-int		sleeping(t_var *v);
+void	sleeping(t_var *v);
 /*
 **		philo1_bonus.c
 */
-void	print_msg(time_t time, t_var *v, char *msg);
-void	print_msg_died_and_exit(time_t time, t_var *v, int err);
 time_t	getime(time_t start);
+void	free_mem(t_var *v);
+void	print_msg(time_t time, t_var *v, char *msg, char *color);
+void	print_msg_died_and_exit(time_t time, t_var *v, int err);
 void	kill_phill(t_var *v);
 /*
 **		main_bonus.c
 */
 int		check_args(t_var *v, int argc, char **argv);
-void	free_mem(t_var *v);
-void	open_semaphores(t_var *v);
-void	start_processes(t_var *v);
+int		open_semaphores(t_var *v);
+int		start_processes(t_var *v);
+int		wait_phils_pids(t_var *v);
 /*
 **		utils1_bonus.c
 */
@@ -100,7 +106,7 @@ void	ft_putnbr_fd(int n, int fd);
 /*
 **		utils2_bonus.c
 */
-int		msg_bad_arguments(void);
+int		msg_bad_arguments(int err);
 int		errmsg(char *str, int err);
 int		ft_atoi(const char *str);
 
