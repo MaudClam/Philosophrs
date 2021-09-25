@@ -20,16 +20,22 @@ time_t	getime(time_t start)
 	return ((tv.tv_sec * 1000) + tv.tv_usec / 1000 - start);
 }
 
-void	free_mem(t_var *v)
+int	free_mem(t_var *v, int err)
 {
 	free(v->pids);
 	v->pids = NULL;
+	free(v->pid_last_ate);
+	v->pid_last_ate = NULL;
 	if (v->sem_forks && sem_close(v->sem_forks) == EINVAL)
 		errmsg("v->sem_forks is not a valid semaphore descriptor", errno);
 	if (v->sem_stdout && sem_close(v->sem_stdout) == EINVAL)
-		errmsg("v->sem_stdout is not a valid semaphore descriptor",errno);
+		errmsg("v->sem_stdout is not a valid semaphore descriptor", errno);
+	if (v->sem_monitor && sem_close(v->sem_monitor) == EINVAL)
+		errmsg("v->sem_monitor is not a valid semaphore descriptor", errno);
 	sem_unlink(SEM_FORKS);
 	sem_unlink(SEM_STDOUT);
+	sem_unlink(SEM_MONITOR);
+	return (err);
 }
 
 void	print_msg(time_t time, t_var *v, char *msg, char *color)
@@ -43,14 +49,13 @@ void	print_msg_died_and_exit(time_t time, t_var *v, int err)
 {
 	sem_wait(v->sem_stdout);
 	printf(RED"%ld %d "MSG_DIED DEFAULT_COLOR, time, v->phil_id);
-	free_mem(v);
-	exit(err);
+	exit(free_mem(v, err));
 }
 
 void	kill_phill(t_var *v)
 {
 	int	i;
-	
+
 	i = 1;
 	while (i <= v->num_of_phils)
 	{

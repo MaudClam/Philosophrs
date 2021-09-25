@@ -26,13 +26,24 @@ void	philosopher(t_var *v)
 
 void	take_forks(t_var *v)
 {
-	sem_wait(v->sem_forks);
-	if (getime(v->time_start) - v->time_last_ate < v->time_to_die)
-		print_msg(getime(v->time_start), v, MSG_TAKEN_FORK, YELLOW);
+	if (v->num_of_phils > 1)
+	{
+		sem_wait(v->sem_forks);
+		if (getime(v->time_start) - v->time_last_ate < v->time_to_die)
+			print_msg(getime(v->time_start), v, MSG_TAKEN_FORK, YELLOW);
+		else
+			print_msg_died_and_exit(getime(v->time_start), v, ERROR);
+		sem_wait(v->sem_forks);
+	}
 	else
+	{
+		print_msg(getime(v->time_start), v, MSG_TAKEN_FORK, YELLOW);
+		while (getime(v->time_start) < v->time_to_eat)
+			usleep(TIME_INTERVAL);
 		print_msg_died_and_exit(getime(v->time_start), v, ERROR);
-	sem_wait(v->sem_forks);
+	}
 }
+
 void	eating(t_var *v)
 {
 	time_t	time_start_eat;
@@ -53,11 +64,10 @@ void	eating(t_var *v)
 			print_msg_died_and_exit(getime(v->time_start), v, ERROR);
 	}
 	if (++v->eat_counter == v->num_of_times_each_phil_must_eat)
-		{
-			put_forks(v);
-			free_mem(v);
-			exit(SUCCESS);
-		}
+	{
+		put_forks(v);
+		exit(free_mem(v, SUCCESS));
+	}
 	else if (v->eat_counter == INT_MAX)
 		v->eat_counter = 0;
 }
