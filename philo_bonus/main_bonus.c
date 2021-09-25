@@ -25,6 +25,7 @@ int	wait_phils_signals(t_var *v)
 			{
 				kill_phill(v);
 				ft_putstr_fd(RED MSG_GAME_OVER DEFAULT_COLOR, STDOUT_FILENO);
+				free_mem(v, ERROR);
 				return (ERROR);
 			}
 			else
@@ -43,8 +44,9 @@ int	start_processes(t_var *v)
 		v->pids[v->phil_id] = fork();
 		if (v->pids[v->phil_id] == ERROR)
 		{
-			errmsg("fork() call error in start_processes()", errno);
+			errmsg("fork() call error", errno);
 			kill_phill(v);
+			free_mem(v, ERROR);
 			return (ERROR);
 		}
 		else if (v->pids[v->phil_id] == SUCCESS)
@@ -58,26 +60,28 @@ int	start_processes(t_var *v)
 int	open_semaphores(t_var *v)
 {
 	sem_unlink(SEM_FORKS);
-	v->sem_forks = sem_open(SEM_FORKS, O_CREAT, S_IRWXU, \
-												(unsigned int)v->num_of_phils);
+	v->sem_forks = sem_open(SEM_FORKS, O_CREAT, S_IRWXU, v->num_of_phils);
 	if (v->sem_forks == SEM_FAILED)
 	{
+		errmsg("sem_open() error", errno);
 		v->sem_forks = NULL;
-		return (errmsg("sem_open()[0] error in open_semaphores()", ERROR));
+		return (free_mem(v, ERROR));
 	}
 	sem_unlink(SEM_STDOUT);
 	v->sem_stdout = sem_open(SEM_STDOUT, O_CREAT, S_IRWXU, 1);
 	if (v->sem_stdout == SEM_FAILED)
 	{
+		errmsg("sem_open() error", errno);
 		v->sem_stdout = NULL;
-		return (errmsg("sem_open()[1] error in open_semaphores()", ERROR));
+		return (free_mem(v, ERROR));
 	}
 	sem_unlink(SEM_MONITOR);
 	v->sem_monitor = sem_open(SEM_MONITOR, O_CREAT, S_IRWXU, 1);
 	if (v->sem_monitor == SEM_FAILED)
 	{
+		errmsg("sem_open() error", errno);
 		v->sem_monitor = NULL;
-		return (errmsg("sem_open()[2] error in open_semaphores()", ERROR));
+		return (free_mem(v, ERROR));
 	}
 	return (SUCCESS);
 }
@@ -112,23 +116,17 @@ int	main(int argc, char **argv)
 
 	memset(&v, 0, sizeof(t_var));
 	if (check_args(&v, argc, argv) == ERROR)
-		exit(ERROR);
+		exit(EXIT_FAILURE);
 	v.pids = (pid_t *)malloc(sizeof(pid_t) * (v.num_of_phils + 1));
 	if (!v.pids)
-		exit(errmsg("malloc()[1] error in main()", errno));
+		exit(errmsg("malloc() error", EXIT_FAILURE));
 	memset(v.pids, -1, sizeof(pid_t) * (v.num_of_phils + 1));
-	v.pid_last_ate = (time_t *)malloc(sizeof(time_t) * (v.num_of_phils + 1));
-	if (!v.pid_last_ate)
-	{
-		free(v.pids);
-		exit(errmsg("malloc()[2] error in main()", errno));
-	}
-	memset(v.pid_last_ate, 0, sizeof(time_t) * (v.num_of_phils + 1));
 	if (open_semaphores(&v) == ERROR)
-		exit(free_mem(&v, ERROR));
+		exit(EXIT_FAILURE);
 	if (start_processes(&v) == ERROR)
-		exit(free_mem(&v, ERROR));
+		exit(EXIT_FAILURE);
 	if (wait_phils_signals(&v) == ERROR)
-		exit(free_mem(&v, ERROR));
-	exit(free_mem(&v, SUCCESS));
+		exit(EXIT_FAILURE);
+	free_mem(&v, SUCCESS);
+	exit(EXIT_SUCCESS);
 }

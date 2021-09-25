@@ -70,7 +70,6 @@ typedef struct s_var
 	sem_t	*sem_stdout;
 	sem_t	*sem_monitor;
 	pid_t	*pids;
-	time_t	*pid_last_ate;
 	time_t	time_last_ate;
 	time_t	time_start;
 }				t_var;
@@ -78,6 +77,7 @@ typedef struct s_var
 /*
 **		philo_bonus.c
 */
+void	*death_monitor(t_var *v);
 void	philosopher(t_var *v);
 void	take_forks(t_var *v);
 void	eating(t_var *v);

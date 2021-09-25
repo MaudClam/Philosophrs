@@ -12,8 +12,37 @@
 
 #include "header_bonus.h"
 
+void	*death_monitor(t_var *v)
+{
+	time_t t;
+	
+	t = getime(v->time_start);
+	while (TRUE)
+	{
+		
+		if (getime(v->time_start) - v->time_last_ate >= v->time_to_die)
+		{
+			print_msg_died_and_exit(getime(v->time_start), v, EXIT_FAILURE);
+//			print_msg(getime(v->time_start), v, MSG_DIED, TURQUOISE);
+//			sem_wait(v->sem_stdout);
+//			printf(RED"%ld %d "MSG_DIED DEFAULT_COLOR, getime(v->time_start), \
+//																	v->phil_id);
+//			free_mem(v, EXIT_FAILURE);
+//			exit(EXIT_FAILURE);
+//			exit(free_mem(v, EXIT_FAILURE));
+		}
+		else
+			usleep(TIME_INTERVAL);
+	}
+	return (NULL);
+}
+
 void	philosopher(t_var *v)
 {
+	pthread_t	th;
+	
+	if (pthread_create(&th, NULL, (void *)&death_monitor, v) != SUCCESS)
+		exit(free_mem(v, errmsg("Failed to create thread", errno)));
 	while (TRUE)
 	{
 		take_forks(v);

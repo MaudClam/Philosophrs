@@ -24,8 +24,6 @@ int	free_mem(t_var *v, int err)
 {
 	free(v->pids);
 	v->pids = NULL;
-	free(v->pid_last_ate);
-	v->pid_last_ate = NULL;
 	if (v->sem_forks && sem_close(v->sem_forks) == EINVAL)
 		errmsg("v->sem_forks is not a valid semaphore descriptor", errno);
 	if (v->sem_stdout && sem_close(v->sem_stdout) == EINVAL)
@@ -49,7 +47,10 @@ void	print_msg_died_and_exit(time_t time, t_var *v, int err)
 {
 	sem_wait(v->sem_stdout);
 	printf(RED"%ld %d "MSG_DIED DEFAULT_COLOR, time, v->phil_id);
-	exit(free_mem(v, err));
+	err = 0;
+//	sem_post(v->sem_stdout);
+//	free_mem(v, err);
+	exit(EXIT_FAILURE);
 }
 
 void	kill_phill(t_var *v)
