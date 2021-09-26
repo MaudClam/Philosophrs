@@ -26,16 +26,12 @@
 # include <semaphore.h>
 # include <signal.h>
 
-# ifndef NUMBER_OF_MALLOCS
-#  define NUMBER_OF_MALLOCS	6
-# endif
-
-# ifndef TEST_NUM_OF_THREADS
-#  define TEST_NUM_OF_THREADS INT_MAX
-# endif
-
 # ifndef TIME_DELAY
-#  define TIME_DELAY 300
+#  define TIME_DELAY 			200
+# endif
+
+# ifndef MONITOR_DELAY
+#  define MONITOR_DELAY 		1000
 # endif
 
 # define TRUE					1

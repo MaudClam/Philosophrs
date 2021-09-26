@@ -28,7 +28,7 @@ void	*death_monitor(t_var *v)
 		else
 		{
 			sem_post(v->sem_monitor);
-			usleep(TIME_DELAY * 2);
+			usleep(MONITOR_DELAY);
 		}
 	}
 	return (NULL);
