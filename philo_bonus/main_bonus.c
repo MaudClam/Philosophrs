@@ -23,9 +23,8 @@ int	wait_phils_signals(t_var *v)
 		{
 			if (v->status != 0)
 			{
-				kill_phill(v);
+				kill_phill(v, SIGKILL);
 				ft_putstr_fd(RED MSG_GAME_OVER DEFAULT_COLOR, STDOUT_FILENO);
-				free_mem(v, ERROR);
 				return (ERROR);
 			}
 			else
@@ -45,8 +44,8 @@ int	start_processes(t_var *v)
 		if (v->pids[v->phil_id] == ERROR)
 		{
 			errmsg("fork() call error", errno);
-			kill_phill(v);
-			free_mem(v, ERROR);
+			kill_phill(v, SIGTERM);
+			kill_phill(v, SIGKILL);
 			return (ERROR);
 		}
 		else if (v->pids[v->phil_id] == SUCCESS)
@@ -60,28 +59,28 @@ int	start_processes(t_var *v)
 int	open_semaphores(t_var *v)
 {
 	sem_unlink(SEM_FORKS);
-	v->sem_forks = sem_open(SEM_FORKS, O_CREAT, 0000700, v->num_of_phils);
+	v->sem_forks = sem_open(SEM_FORKS, O_CREAT, S_IRWXU, v->num_of_phils);
 	if (v->sem_forks == SEM_FAILED)
 	{
 		errmsg("sem_open() error", errno);
 		v->sem_forks = NULL;
-		return (free_mem(v, ERROR));
+		return (ERROR);
 	}
 	sem_unlink(SEM_STDOUT);
-	v->sem_stdout = sem_open(SEM_STDOUT, 0000700, S_IRWXU, 1);
+	v->sem_stdout = sem_open(SEM_STDOUT, O_CREAT, S_IRWXU, 1);
 	if (v->sem_stdout == SEM_FAILED)
 	{
 		errmsg("sem_open() error", errno);
 		v->sem_stdout = NULL;
-		return (free_mem(v, ERROR));
+		return (ERROR);
 	}
 	sem_unlink(SEM_MONITOR);
-	v->sem_monitor = sem_open(SEM_MONITOR, 0000700, S_IRWXU, 1);
+	v->sem_monitor = sem_open(SEM_MONITOR, O_CREAT, S_IRWXU, 1);
 	if (v->sem_monitor == SEM_FAILED)
 	{
 		errmsg("sem_open() error", errno);
 		v->sem_monitor = NULL;
-		return (free_mem(v, ERROR));
+		return (ERROR);
 	}
 	return (SUCCESS);
 }
@@ -119,14 +118,13 @@ int	main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	v.pids = (pid_t *)malloc(sizeof(pid_t) * (v.num_of_phils + 1));
 	if (!v.pids)
-		exit(errmsg("malloc() error", EXIT_FAILURE));
+		exit(errmsg("malloc() error", errno));
 	memset(v.pids, -1, sizeof(pid_t) * (v.num_of_phils + 1));
 	if (open_semaphores(&v) == ERROR)
-		exit(EXIT_FAILURE);
+		exit(free_mem(&v, EXIT_FAILURE));
 	if (start_processes(&v) == ERROR)
-		exit(EXIT_FAILURE);
+		exit(free_mem(&v, EXIT_FAILURE));
 	if (wait_phils_signals(&v) == ERROR)
-		exit(EXIT_FAILURE);
-	free_mem(&v, SUCCESS);
-	exit(EXIT_SUCCESS);
+		exit(free_mem(&v, EXIT_FAILURE));
+	exit(free_mem(&v, EXIT_SUCCESS));
 }

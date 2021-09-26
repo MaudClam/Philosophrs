@@ -23,7 +23,8 @@ void	*death_monitor(t_var *v)
 			sem_wait(v->sem_stdout);
 			printf(RED"%ld %d "MSG_DIED DEFAULT_COLOR, \
 											getime(v->time_start), v->phil_id);
-			exit(EXIT_FAILURE);
+			free_mem(v, WITHOUT_SEM_CLOSE);
+			exit(ERROR);
 		}
 		else
 		{
@@ -34,16 +35,20 @@ void	*death_monitor(t_var *v)
 	return (NULL);
 }
 
-void	kill_phill(t_var *v)
+void	kill_phill(t_var *v, int signal)
 {
 	int	i;
 
 	i = 1;
 	while (i <= v->num_of_phils)
 	{
+		usleep(TIME_DELAY);
 		if (v->pids[i] > 1)
-			if (kill(v->pids[i], SIGKILL) == SUCCESS)
+		{
+			kill(v->pids[i], signal);
+			if (kill(v->pids[i], signal) == SUCCESS)
 				waitpid(v->pids[i], &v->status, WNOHANG);
+		}
 		i++;
 	}
 }
@@ -52,15 +57,18 @@ int	free_mem(t_var *v, int err)
 {
 	free(v->pids);
 	v->pids = NULL;
-	if (v->sem_forks && sem_close(v->sem_forks) == EINVAL)
-		errmsg("v->sem_forks is not a valid semaphore descriptor", errno);
-	if (v->sem_stdout && sem_close(v->sem_stdout) == EINVAL)
-		errmsg("v->sem_stdout is not a valid semaphore descriptor", errno);
-	if (v->sem_monitor && sem_close(v->sem_monitor) == EINVAL)
-		errmsg("v->sem_monitor is not a valid semaphore descriptor", errno);
-	sem_unlink(SEM_FORKS);
-	sem_unlink(SEM_STDOUT);
-	sem_unlink(SEM_MONITOR);
+	if (err != WITHOUT_SEM_CLOSE)
+	{
+		if (v->sem_forks && sem_close(v->sem_forks) == EINVAL)
+			errmsg("v->sem_forks is not a valid semaphore descriptor", errno);
+		if (v->sem_stdout && sem_close(v->sem_stdout) == EINVAL)
+			errmsg("v->sem_stdout is not a valid semaphore descriptor", errno);
+		if (v->sem_monitor && sem_close(v->sem_monitor) == EINVAL)
+			errmsg("v->sem_monitor is not a valid semaphore descriptor", errno);
+		sem_unlink(SEM_FORKS);
+		sem_unlink(SEM_STDOUT);
+		sem_unlink(SEM_MONITOR);
+	}
 	return (err);
 }
 

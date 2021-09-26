@@ -27,32 +27,33 @@
 # include <signal.h>
 
 # ifndef TIME_DELAY
-#  define TIME_DELAY 			200
+#  define TIME_DELAY 				200
 # endif
 
 # ifndef MONITOR_DELAY
-#  define MONITOR_DELAY 		1000
+#  define MONITOR_DELAY 			1000
 # endif
 
-# define TRUE					1
-# define FALSE					0
-# define ERROR					-1
-# define SUCCESS				0
-# define SEM_FORKS				"/forks"
-# define SEM_STDOUT				"/stdout"
-# define SEM_MONITOR			"/monitor"
-# define DEFAULT_COLOR			"\033[0m"
-# define YELLOW					"\033[33m"
-# define GREEN					"\033[32m"
-# define GRAY					"\033[37m"
-# define TURQUOISE				"\033[36m"
-# define RED					"\033[31m"
-# define MSG_TAKEN_FORK			"has taken a fork\n"
-# define MSG_EATING				"is eating\n"
-# define MSG_SLEEPING			"is sleeping\n"
-# define MSG_THINKING			"is thinking\n"
-# define MSG_DIED				"is died\n"
-# define MSG_GAME_OVER			"====GAME OVER!====\n"
+# define TRUE						1
+# define FALSE						0
+# define ERROR						-1
+# define SUCCESS					0
+# define WITHOUT_SEM_CLOSE	2
+# define SEM_FORKS					"/forks"
+# define SEM_STDOUT					"/stdout"
+# define SEM_MONITOR				"/monitor"
+# define DEFAULT_COLOR				"\033[0m"
+# define YELLOW						"\033[33m"
+# define GREEN						"\033[32m"
+# define GRAY						"\033[37m"
+# define TURQUOISE					"\033[36m"
+# define RED						"\033[31m"
+# define MSG_TAKEN_FORK				"has taken a fork\n"
+# define MSG_EATING					"is eating\n"
+# define MSG_SLEEPING				"is sleeping\n"
+# define MSG_THINKING				"is thinking\n"
+# define MSG_DIED					"is died\n"
+# define MSG_GAME_OVER				"====GAME OVER!====\n"
 
 typedef struct s_var
 {
@@ -85,7 +86,7 @@ void	sleeping(t_var *v);
 **		philo1_bonus.c
 */
 void	*death_monitor(t_var *v);
-void	kill_phill(t_var *v);
+void	kill_phill(t_var *v, int signal);
 int		free_mem(t_var *v, int err);
 void	print_msg(time_t time, t_var *v, char *msg, char *color);
 time_t	getime(time_t start);
