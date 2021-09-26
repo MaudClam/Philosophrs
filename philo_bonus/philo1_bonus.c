@@ -6,18 +6,46 @@
 /*   By: mclam <mclam@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/25 20:32:03 by mclam             #+#    #+#             */
-/*   Updated: 2021/09/25 07:00:58 by mclam            ###   ########.fr       */
+/*   Updated: 2021/09/26 04:02:27 by mclam            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "header_bonus.h"
 
-time_t	getime(time_t start)
+void	*death_monitor(t_var *v)
 {
-	struct timeval	tv;
+	while (TRUE)
+	{
+		sem_wait(v->sem_monitor);
+		if (getime(v->time_start) - v->time_last_ate >= v->time_to_die)
+		{
+			sem_post(v->sem_monitor);
+			sem_wait(v->sem_stdout);
+			printf(RED"%ld %d "MSG_DIED DEFAULT_COLOR, \
+											getime(v->time_start), v->phil_id);
+			exit(EXIT_FAILURE);
+		}
+		else
+		{
+			sem_post(v->sem_monitor);
+			usleep(TIME_DELAY * 2);
+		}
+	}
+	return (NULL);
+}
 
-	gettimeofday(&tv, NULL);
-	return ((tv.tv_sec * 1000) + tv.tv_usec / 1000 - start);
+void	kill_phill(t_var *v)
+{
+	int	i;
+
+	i = 1;
+	while (i <= v->num_of_phils)
+	{
+		if (v->pids[i] > 1)
+			if (kill(v->pids[i], SIGKILL) == SUCCESS)
+				waitpid(v->pids[i], &v->status, WNOHANG);
+		i++;
+	}
 }
 
 int	free_mem(t_var *v, int err)
@@ -43,26 +71,10 @@ void	print_msg(time_t time, t_var *v, char *msg, char *color)
 	sem_post(v->sem_stdout);
 }
 
-void	print_msg_died_and_exit(time_t time, t_var *v, int err)
+time_t	getime(time_t start)
 {
-	sem_wait(v->sem_stdout);
-	printf(RED"%ld %d "MSG_DIED DEFAULT_COLOR, time, v->phil_id);
-	err = 0;
-//	sem_post(v->sem_stdout);
-//	free_mem(v, err);
-	exit(EXIT_FAILURE);
-}
+	struct timeval	tv;
 
-void	kill_phill(t_var *v)
-{
-	int	i;
-
-	i = 1;
-	while (i <= v->num_of_phils)
-	{
-		if (v->pids[i] > 1)
-			if (kill(v->pids[i], SIGKILL) == SUCCESS)
-				waitpid(v->pids[i], &v->status, WNOHANG);
-		i++;
-	}
+	gettimeofday(&tv, NULL);
+	return ((tv.tv_sec * 1000) + tv.tv_usec / 1000 - start);
 }

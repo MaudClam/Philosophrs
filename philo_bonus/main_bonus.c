@@ -6,7 +6,7 @@
 /*   By: mclam <mclam@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/22 03:05:38 by mclam             #+#    #+#             */
-/*   Updated: 2021/09/25 07:00:43 by mclam            ###   ########.fr       */
+/*   Updated: 2021/09/26 04:02:11 by mclam            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ int	start_processes(t_var *v)
 		else if (v->pids[v->phil_id] == SUCCESS)
 			philosopher(v);
 		else
-			usleep(TIME_INTERVAL);
+			usleep(TIME_DELAY);
 	}
 	return (SUCCESS);
 }

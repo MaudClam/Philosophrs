@@ -6,7 +6,7 @@
 /*   By: mclam <mclam@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/17 15:02:18 by mclam             #+#    #+#             */
-/*   Updated: 2021/09/25 06:59:44 by mclam            ###   ########.fr       */
+/*   Updated: 2021/09/26 04:02:51 by mclam            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,8 @@
 #  define TEST_NUM_OF_THREADS INT_MAX
 # endif
 
-# ifndef TIME_INTERVAL
-#  define TIME_INTERVAL 500
+# ifndef TIME_DELAY
+#  define TIME_DELAY 300
 # endif
 
 # define TRUE					1
@@ -70,27 +70,27 @@ typedef struct s_var
 	sem_t	*sem_stdout;
 	sem_t	*sem_monitor;
 	pid_t	*pids;
-	time_t	time_last_ate;
 	time_t	time_start;
+	time_t	time_start_eat;
+	time_t	time_last_ate;
 }				t_var;
 
 /*
 **		philo_bonus.c
 */
-void	*death_monitor(t_var *v);
 void	philosopher(t_var *v);
-void	take_forks(t_var *v);
-void	eating(t_var *v);
+int		take_forks(t_var *v);
+int		eating(t_var *v);
 void	put_forks(t_var *v);
 void	sleeping(t_var *v);
 /*
 **		philo1_bonus.c
 */
-time_t	getime(time_t start);
+void	*death_monitor(t_var *v);
+void	kill_phill(t_var *v);
 int		free_mem(t_var *v, int err);
 void	print_msg(time_t time, t_var *v, char *msg, char *color);
-void	print_msg_died_and_exit(time_t time, t_var *v, int err);
-void	kill_phill(t_var *v);
+time_t	getime(time_t start);
 /*
 **		main_bonus.c
 */

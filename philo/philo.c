@@ -44,7 +44,7 @@ int	eating(t_phil *phil)
 	print_msg(getime(phil->v->time_start), phil, MSG_EATING);
 	while (getime(phil->v->time_start) - time_start_eat < phil->v->time_to_eat)
 	{
-		usleep(TIME_INTERVAL);
+		usleep(TIME_DELAY);
 		phil->meal = LONG_MAX;
 		ft_swap(&phil->meal, &phil->belly);
 		ft_swap(&phil->belly, &phil->feces);

@@ -18,7 +18,7 @@ void	death_monitor(t_var *v, t_phil **phil)
 
 	while (v->pnu)
 	{
-		usleep(TIME_INTERVAL);
+		usleep(TIME_DELAY);
 		i = 0;
 		while (i < v->pnu)
 		{
@@ -108,7 +108,7 @@ int	start_threads(t_var *v, t_phil **phil)
 	{
 		if (i != TEST_NUM_OF_THREADS && \
 			!pthread_create(&phil[i]->th, NULL, (void *)&philosopher, phil[i]))
-			usleep(TIME_INTERVAL);
+			usleep(TIME_DELAY);
 		else
 		{
 			errmsg_mutex("Faled to create thread", ERROR, v);

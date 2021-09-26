@@ -30,8 +30,8 @@
 #  define TEST_NUM_OF_THREADS INT_MAX
 # endif
 
-# ifndef TIME_INTERVAL
-#  define TIME_INTERVAL 500
+# ifndef TIME_DELAY
+#  define TIME_DELAY 500
 # endif
 
 # define TRUE					1
