@@ -17,7 +17,7 @@ void	*death_monitor(t_var *v)
 	while (TRUE)
 	{
 		sem_wait(v->sem_monitor);
-		if (getime(v->time_start) - v->time_last_ate >= v->time_to_die)
+		if (getime(v->time_start) - v->time_last_ate > v->time_to_die)
 		{
 			sem_post(v->sem_monitor);
 			sem_wait(v->sem_stdout);
