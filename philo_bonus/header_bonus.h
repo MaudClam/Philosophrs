@@ -20,6 +20,8 @@
 # include <unistd.h>
 # include <errno.h>
 # include <sys/time.h>
+# include <sys/wait.h>
+# include <fcntl.h>
 # include <limits.h>
 # include <semaphore.h>
 # include <signal.h>
@@ -40,9 +42,9 @@
 # define FALSE					0
 # define ERROR					-1
 # define SUCCESS				0
-# define SEM_FORKS				"./forks"
-# define SEM_STDOUT				"./stdout"
-# define SEM_MONITOR			"./monitor"
+# define SEM_FORKS				"/forks"
+# define SEM_STDOUT				"/stdout"
+# define SEM_MONITOR			"/monitor"
 # define DEFAULT_COLOR			"\033[0m"
 # define YELLOW					"\033[33m"
 # define GREEN					"\033[32m"

@@ -60,7 +60,7 @@ int	start_processes(t_var *v)
 int	open_semaphores(t_var *v)
 {
 	sem_unlink(SEM_FORKS);
-	v->sem_forks = sem_open(SEM_FORKS, O_CREAT, S_IRWXU, v->num_of_phils);
+	v->sem_forks = sem_open(SEM_FORKS, O_CREAT, 0000700, v->num_of_phils);
 	if (v->sem_forks == SEM_FAILED)
 	{
 		errmsg("sem_open() error", errno);
@@ -68,7 +68,7 @@ int	open_semaphores(t_var *v)
 		return (free_mem(v, ERROR));
 	}
 	sem_unlink(SEM_STDOUT);
-	v->sem_stdout = sem_open(SEM_STDOUT, O_CREAT, S_IRWXU, 1);
+	v->sem_stdout = sem_open(SEM_STDOUT, 0000700, S_IRWXU, 1);
 	if (v->sem_stdout == SEM_FAILED)
 	{
 		errmsg("sem_open() error", errno);
@@ -76,7 +76,7 @@ int	open_semaphores(t_var *v)
 		return (free_mem(v, ERROR));
 	}
 	sem_unlink(SEM_MONITOR);
-	v->sem_monitor = sem_open(SEM_MONITOR, O_CREAT, S_IRWXU, 1);
+	v->sem_monitor = sem_open(SEM_MONITOR, 0000700, S_IRWXU, 1);
 	if (v->sem_monitor == SEM_FAILED)
 	{
 		errmsg("sem_open() error", errno);
