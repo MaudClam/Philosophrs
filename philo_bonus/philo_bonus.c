@@ -42,7 +42,10 @@ void	philosopher(t_var *v)
 	pthread_t	th;
 	
 	if (pthread_create(&th, NULL, (void *)&death_monitor, v) != SUCCESS)
-		exit(free_mem(v, errmsg("Failed to create thread", errno)));
+	{
+		free_mem(v, errmsg("Failed to create thread", errno));
+		exit(EXIT_FAILURE);
+	}
 	while (TRUE)
 	{
 		take_forks(v);
