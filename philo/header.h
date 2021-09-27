@@ -23,7 +23,7 @@
 # include <limits.h>
 
 # ifndef NUMBER_OF_MALLOCS
-#  define NUMBER_OF_MALLOCS	6
+#  define NUMBER_OF_MALLOCS		6
 # endif
 
 # ifndef TEST_NUM_OF_THREADS
@@ -31,7 +31,7 @@
 # endif
 
 # ifndef TIME_DELAY
-#  define TIME_DELAY 500
+#  define TIME_DELAY 			300
 # endif
 
 # define TRUE					1
