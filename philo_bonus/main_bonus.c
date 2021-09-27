@@ -17,6 +17,9 @@ int	wait_phils_signals(t_var *v)
 	int	i;
 
 	i = 0;
+	while (i++ <= v->num_of_phils)
+		sem_post(v->sem_stdout);
+	i = 0;
 	while (i < v->num_of_phils)
 	{
 		if (waitpid(-1, &v->status, 0) != -1)
@@ -37,7 +40,7 @@ int	wait_phils_signals(t_var *v)
 
 int	start_processes(t_var *v)
 {
-	v->time_start = getime(0);
+	sem_wait(v->sem_stdout);
 	while (v->phil_id++ < v->num_of_phils)
 	{
 		v->pids[v->phil_id] = fork();

@@ -16,6 +16,9 @@ void	philosopher(t_var *v)
 {
 	pthread_t	th;
 
+	sem_wait(v->sem_stdout);
+	v->time_start = getime(0);
+	usleep(v->phil_id * TIME_DELAY);
 	if (pthread_create(&th, NULL, (void *)&death_monitor, v) != SUCCESS)
 		exit(free_mem(v, errmsg("Failed to create thread", errno)));
 	while (TRUE)

@@ -27,7 +27,7 @@
 # include <signal.h>
 
 # ifndef TIME_DELAY
-#  define TIME_DELAY 				200
+#  define TIME_DELAY 				300
 # endif
 
 # ifndef MONITOR_DELAY
