@@ -47,7 +47,6 @@ int	start_processes(t_var *v)
 		if (v->pids[v->phil_id] == ERROR)
 		{
 			errmsg("fork() call error", errno);
-			kill_phill(v, SIGTERM);
 			kill_phill(v, SIGKILL);
 			return (ERROR);
 		}
