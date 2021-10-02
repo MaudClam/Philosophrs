@@ -21,6 +21,7 @@ void	death_monitor(t_var *v)
 	usleep(v->phil_id * TIME_DELAY);
 	if (pthread_create(&v->th, NULL, (void *)&philosopher, v) != SUCCESS)
 		exit(free_mem(v, errmsg("failed to create thread", errno)));
+	pthread_detach(v->th);
 	while (TRUE)
 	{
 		sem_wait(v->sem_monitor);
