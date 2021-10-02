@@ -33,7 +33,6 @@ int	wait_phils_signals(t_var *v)
 			else
 				i++;
 		}
-		usleep(TIME_DELAY);
 	}
 	ft_putstr_fd(GREEN MSG_GAME_OVER DEFAULT, STDOUT_FILENO);
 	return (SUCCESS);
