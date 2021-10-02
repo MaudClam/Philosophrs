@@ -51,6 +51,7 @@ void	death(t_var *v)
 		usleep(TIME_DELAY);
 		sem_wait(v->sem_monitor);
 	}
+	sem_post(v->sem_monitor);
 	sem_monitor(v, CLOSE);
 	usleep(MONITOR_DELAY);
 }
