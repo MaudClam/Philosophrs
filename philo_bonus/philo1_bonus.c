@@ -52,6 +52,7 @@ void	death(t_var *v)
 		sem_wait(v->sem_monitor);
 	}
 	sem_monitor(v, CLOSE);
+	usleep(MONITOR_DELAY);
 }
 
 int	sem_monitor(t_var *v, char mode)
