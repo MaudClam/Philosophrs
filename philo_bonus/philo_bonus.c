@@ -12,26 +12,27 @@
 
 #include "header_bonus.h"
 
-void	philosopher(t_var *v)
+void	*philosopher(t_var *v)
 {
-	pthread_t	th;
-
-	sem_wait(v->sem_stdout);
-	v->time_start = getime(0);
-	usleep(v->phil_id * TIME_DELAY);
-	if (pthread_create(&th, NULL, (void *)&death_monitor, v) != SUCCESS)
-		exit(free_mem(v, errmsg("Failed to create thread", errno)));
-	while (TRUE)
+	while (v->eat_counter < v->num_of_times_each_phil_must_eat)
 	{
 		if (take_forks(v) == ERROR)
 			break ;
 		if (eating(v) == ERROR)
+		{
+			sem_post(v->sem_monitor);
+			put_forks(v);
 			break ;
+		}
 		put_forks(v);
-		sleeping(v);
+		if (sleeping(v) == ERROR)
+			break ;
 		print_msg(getime(v->time_start), v, MSG_THINKING, TURQUOISE);
 	}
-	free_mem(v, WITHOUT_SEM_CLOSE);
+	sem_wait(v->sem_forks);
+	v->thread_compltd = TRUE;
+	sem_post(v->sem_forks);
+	return (NULL);
 }
 
 int	take_forks(t_var *v)
@@ -63,21 +64,15 @@ int	eating(t_var *v)
 		print_msg(v->time_start_eat, v, MSG_EATING, GREEN);
 	}
 	else
-	{
-		sem_post(v->sem_monitor);
-		put_forks(v);
 		return (ERROR);
-	}
 	while (getime(v->time_start) - v->time_start_eat < v->time_to_eat)
 		usleep(TIME_DELAY);
+	sem_wait(v->sem_monitor);
 	if (++v->eat_counter == v->num_of_times_each_phil_must_eat)
-	{
-		put_forks(v);
-		free_mem(v, WITHOUT_SEM_CLOSE);
-		exit(EXIT_SUCCESS);
-	}
+		return (ERROR);
 	else if (v->eat_counter == INT_MAX)
 		v->eat_counter = 0;
+	sem_post(v->sem_monitor);
 	return (SUCCESS);
 }
 
@@ -87,12 +82,16 @@ void	put_forks(t_var *v)
 	sem_post(v->sem_forks);
 }
 
-void	sleeping(t_var *v)
+int	sleeping(t_var *v)
 {
 	time_t	time_start_sleep;
 
 	time_start_sleep = getime(v->time_start);
 	print_msg(time_start_sleep, v, MSG_SLEEPING, GRAY);
 	while (getime(v->time_start) - time_start_sleep <= v->time_to_sleep)
-		usleep(TIME_DELAY);
+		if (v->time_start_eat - v->time_last_ate < v->time_to_die)
+			usleep(TIME_DELAY);
+		else
+			return (ERROR);
+	return (SUCCESS);
 }

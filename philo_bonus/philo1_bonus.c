@@ -12,27 +12,69 @@
 
 #include "header_bonus.h"
 
-void	*death_monitor(t_var *v)
+void	death_monitor(t_var *v)
 {
+	if (sem_monitor(v, OPEN) != SUCCESS)
+		exit(free_mem(v, errmsg("failed to open sem_monitor", EXIT_FAILURE)));
+	sem_wait(v->sem_stdout);
+	v->time_start = getime(0);
+	usleep(v->phil_id * TIME_DELAY);
+	if (pthread_create(&v->th, NULL, (void *)&philosopher, v) != SUCCESS)
+		exit(free_mem(v, errmsg("failed to create thread", errno)));
 	while (TRUE)
 	{
 		sem_wait(v->sem_monitor);
-		if (getime(v->time_start) - v->time_last_ate > v->time_to_die)
+		if (getime(v->time_start) - v->time_last_ate < v->time_to_die && \
+			v->eat_counter == v->num_of_times_each_phil_must_eat && \
+			v->thread_compltd == TRUE && sem_monitor(v, CLOSE) == SUCCESS)
+			exit(free_mem(v, EXIT_SUCCESS));
+		else if (getime(v->time_start) - v->time_last_ate >= v->time_to_die)
 		{
-			sem_post(v->sem_monitor);
-			sem_wait(v->sem_stdout);
-			printf(RED"%ld %d "MSG_DIED DEFAULT_COLOR, \
-											getime(v->time_start), v->phil_id);
-			free_mem(v, WITHOUT_SEM_CLOSE);
-			exit(ERROR);
+			death(v);
+			exit(free_mem(v,EXIT_FAILURE));
 		}
-		else
-		{
-			sem_post(v->sem_monitor);
-			usleep(MONITOR_DELAY);
-		}
+		sem_post(v->sem_monitor);
+		usleep(MONITOR_DELAY);
 	}
-	return (NULL);
+}
+
+void	death(t_var *v)
+{
+	sem_post(v->sem_monitor);
+	sem_wait(v->sem_stdout);
+	printf(RED"%ld %d "MSG_DIED DEFAULT, getime(v->time_start), v->phil_id);
+	sem_wait(v->sem_monitor);
+	while (v->thread_compltd != TRUE)
+	{
+		sem_post(v->sem_monitor);
+		usleep(TIME_DELAY);
+		sem_wait(v->sem_monitor);
+	}
+	sem_monitor(v, CLOSE);
+}
+
+int	sem_monitor(t_var *v, char mode)
+{
+	if (mode == OPEN)
+	{
+		v->sem_monitor_name = indexname(SEM_MONITOR, v->phil_id);
+		if (!v->sem_monitor_name)
+			return (free_mem(v, errmsg("error sem_monitor_name", ERROR)));
+		sem_unlink(v->sem_monitor_name);
+		v->sem_monitor = sem_open(v->sem_monitor_name, O_CREAT, S_IRWXU, 1);
+		if (v->sem_monitor == SEM_FAILED)
+			return (errmsg("sem_open() error", errno));
+	}
+	else
+	{
+		sem_post(v->sem_monitor);
+		if (v->sem_monitor && sem_close(v->sem_monitor) == EINVAL)
+			errmsg("v->sem_monitor is not a valid semaphore descriptor", errno);
+		sem_unlink(v->sem_monitor_name);
+		free(v->sem_monitor_name);
+		v->sem_monitor_name = NULL;
+	}
+	return (SUCCESS);
 }
 
 void	kill_phill(t_var *v, int signal)
@@ -57,32 +99,11 @@ int	free_mem(t_var *v, int err)
 {
 	free(v->pids);
 	v->pids = NULL;
-	if (err != WITHOUT_SEM_CLOSE)
-	{
-		if (v->sem_forks && sem_close(v->sem_forks) == EINVAL)
-			errmsg("v->sem_forks is not a valid semaphore descriptor", errno);
-		if (v->sem_stdout && sem_close(v->sem_stdout) == EINVAL)
-			errmsg("v->sem_stdout is not a valid semaphore descriptor", errno);
-		if (v->sem_monitor && sem_close(v->sem_monitor) == EINVAL)
-			errmsg("v->sem_monitor is not a valid semaphore descriptor", errno);
-		sem_unlink(SEM_FORKS);
-		sem_unlink(SEM_STDOUT);
-		sem_unlink(SEM_MONITOR);
-	}
+	if (v->sem_forks && sem_close(v->sem_forks) == EINVAL)
+		errmsg("v->sem_forks is not a valid semaphore descriptor", errno);
+	if (v->sem_stdout && sem_close(v->sem_stdout) == EINVAL)
+		errmsg("v->sem_stdout is not a valid semaphore descriptor", errno);
+	sem_unlink(SEM_FORKS);
+	sem_unlink(SEM_STDOUT);
 	return (err);
-}
-
-void	print_msg(time_t time, t_var *v, char *msg, char *color)
-{
-	sem_wait(v->sem_stdout);
-	printf("%s%ld %d %s"DEFAULT_COLOR, color, time, v->phil_id, msg);
-	sem_post(v->sem_stdout);
-}
-
-time_t	getime(time_t start)
-{
-	struct timeval	tv;
-
-	gettimeofday(&tv, NULL);
-	return ((tv.tv_sec * 1000) + tv.tv_usec / 1000 - start);
 }

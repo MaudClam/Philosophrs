@@ -25,11 +25,6 @@ size_t	ft_strlen(const char *s)
 	return (len);
 }
 
-void	ft_putchar_fd(char c, int fd)
-{
-	write(fd, &c, 1);
-}
-
 void	ft_putstr_fd(char *s, int fd)
 {
 	if (!s)
@@ -37,10 +32,37 @@ void	ft_putstr_fd(char *s, int fd)
 	write(fd, s, ft_strlen(s));
 }
 
+int	ft_atoi(const char *str)
+{
+	unsigned int	nbr;
+	int				sign;
+	int				i;
+
+	nbr = 0;
+	sign = 1;
+	if (!str || !str[0])
+		return (0);
+	i = 0;
+	while (str[i] && str[i] == ' ')
+		i++;
+	if (str[i] == '-')
+	{
+		sign = -1;
+		i++;
+	}
+	else if (str[i] == '+')
+		i++;
+	while (str[i] && str[i] >= '0' && str[i] <= '9')
+	{
+		nbr = nbr * 10 + (str[i] - '0');
+		i++;
+	}
+	return (nbr * sign);
+}
+
 /*
 ** start of ft_putnbr_fd()
 */
-
 static int	spec_cond(int nb, int fd)
 {
 	if (nb == -2147483648)
@@ -60,6 +82,7 @@ void	ft_putnbr_fd(int n, int fd)
 {
 	int		dgts;
 	int		nb_;
+	char	c;
 
 	dgts = 1;
 	n = spec_cond(n, fd);
@@ -71,12 +94,12 @@ void	ft_putnbr_fd(int n, int fd)
 	}
 	while (dgts != 0)
 	{
-		ft_putchar_fd(n / dgts + '0', fd);
+		c = n / dgts + '0';
 		n = n % dgts;
 		dgts = dgts / 10;
+		write(fd, &c, 1);
 	}
 }
-
 /*
 ** end of ft_putnbr_fd()
 */

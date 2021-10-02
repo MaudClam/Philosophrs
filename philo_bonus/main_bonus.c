@@ -27,14 +27,14 @@ int	wait_phils_signals(t_var *v)
 			if (v->status != 0)
 			{
 				kill_phill(v, SIGKILL);
-				ft_putstr_fd(RED MSG_GAME_OVER DEFAULT_COLOR, STDOUT_FILENO);
+				ft_putstr_fd(RED MSG_GAME_OVER DEFAULT, STDOUT_FILENO);
 				return (ERROR);
 			}
 			else
 				i++;
 		}
 	}
-	ft_putstr_fd(GREEN MSG_GAME_OVER DEFAULT_COLOR, STDOUT_FILENO);
+	ft_putstr_fd(GREEN MSG_GAME_OVER DEFAULT, STDOUT_FILENO);
 	return (SUCCESS);
 }
 
@@ -51,7 +51,7 @@ int	start_processes(t_var *v)
 			return (ERROR);
 		}
 		else if (v->pids[v->phil_id] == SUCCESS)
-			philosopher(v);
+			death_monitor(v);
 		else
 			usleep(TIME_DELAY);
 	}

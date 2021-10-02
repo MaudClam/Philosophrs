@@ -31,6 +31,16 @@ For more details: https://profile.intra.42.fr/searches\n\n", STDOUT_FILENO);
 	return (err);
 }
 
+void	print_msg(time_t time, t_var *v, char *msg, char *color)
+{
+	if (getime(v->time_start) - v->time_last_ate < v->time_to_die)
+	{
+		sem_wait(v->sem_stdout);
+		printf("%s%ld %d %s"DEFAULT, color, time, v->phil_id, msg);
+		sem_post(v->sem_stdout);
+	}
+}
+
 int	errmsg(char *str, int err)
 {
 	ft_putstr_fd("Error: ", STDERR_FILENO);
@@ -41,53 +51,37 @@ int	errmsg(char *str, int err)
 	return (err);
 }
 
-/*
-** start of ft_atoi()
-*/
-static int	islonglong(unsigned long nbr, int sign)
+char	*indexname(char const *name, int index)
 {
-	if (nbr >= LLONG_MAX && sign > 0)
-		return (-1);
-	else if (nbr > LLONG_MAX)
-		return (0);
-	return ((int)nbr);
-}
-
-static int	ft_isspace(char c)
-{
-	if (c == '\t' || c == '\n' || c == '\r' \
-					|| c == '\v' || c == '\f' || c == ' ')
-		return (1);
-	return (0);
-}
-
-int	ft_atoi(const char *str)
-{
-	unsigned long int	nbr;
-	int					sign;
-	int					i;
-
-	nbr = 0;
-	sign = 1;
-	if (!str || !str[0])
-		return (0);
-	i = 0;
-	while (str[i] && ft_isspace(str[i]))
-		i++;
-	if (str[i] == '-')
+	char	*str;
+	int		len;
+	int		i;
+	
+	if (index < 1)
+		return ((char *)name);
+	len = (int)ft_strlen(name) + 1;
+	i = index;
+	while (i > 9 && ++len)
+		i /= 10;
+	str = malloc(len + 1);
+	if (!str)
+		return (NULL);
+	i = -1;
+	while (name && name[++i])
+		str[i] = name[i];
+	str[len] = '\0';
+	while (len-- && index)
 	{
-		sign = -1;
-		i++;
+		str[len] = index % 10 + '0';
+		index /= 10;
 	}
-	else if (str[i] == '+')
-		i++;
-	while (str[i] && str[i] >= '0' && str[i] <= '9')
-	{
-		nbr = nbr * 10 + (str[i] - '0');
-		i++;
-	}
-	return (islonglong(nbr, sign) * sign);
+	return (str);
 }
-/*
-** end of ft_atoi()
-*/
+
+time_t	getime(time_t start)
+{
+	struct timeval	tv;
+
+	gettimeofday(&tv, NULL);
+	return ((tv.tv_sec * 1000) + tv.tv_usec / 1000 - start);
+}
