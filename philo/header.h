@@ -31,7 +31,7 @@
 # endif
 
 # ifndef TIME_DELAY
-#  define TIME_DELAY 			300
+#  define TIME_DELAY 			200
 # endif
 
 # define TRUE					1
