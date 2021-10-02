@@ -76,14 +76,6 @@ int	open_semaphores(t_var *v)
 		v->sem_stdout = NULL;
 		return (ERROR);
 	}
-	sem_unlink(SEM_MONITOR);
-	v->sem_monitor = sem_open(SEM_MONITOR, O_CREAT, S_IRWXU, 1);
-	if (v->sem_monitor == SEM_FAILED)
-	{
-		errmsg("sem_open() error", errno);
-		v->sem_monitor = NULL;
-		return (ERROR);
-	}
 	return (SUCCESS);
 }
 
