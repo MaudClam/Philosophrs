@@ -22,9 +22,9 @@ int	wait_phils_signals(t_var *v)
 	i = 0;
 	while (i < v->num_of_phils)
 	{
-		if (waitpid(-1, &v->status, 0) != -1)
+		if (waitpid(-1, &v->status, 0) != ERROR)
 		{
-			if (v->status != 0)
+			if (v->status != SUCCESS)
 			{
 				kill_phill(v, SIGKILL);
 				ft_putstr_fd(RED MSG_GAME_OVER DEFAULT, STDOUT_FILENO);

@@ -56,7 +56,7 @@ char	*indexname(char const *name, int index)
 	char	*str;
 	int		len;
 	int		i;
-	
+
 	if (index < 1)
 		return ((char *)name);
 	len = (int)ft_strlen(name) + 1;

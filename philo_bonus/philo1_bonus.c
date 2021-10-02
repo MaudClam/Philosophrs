@@ -32,7 +32,7 @@ void	death_monitor(t_var *v)
 		else if (getime(v->time_start) - v->time_last_ate >= v->time_to_die)
 		{
 			death(v);
-			exit(free_mem(v,EXIT_FAILURE));
+			exit(free_mem(v, EXIT_FAILURE));
 		}
 		sem_post(v->sem_monitor);
 		usleep(MONITOR_DELAY);

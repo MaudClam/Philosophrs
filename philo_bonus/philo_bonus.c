@@ -16,22 +16,21 @@ void	*philosopher(t_var *v)
 {
 	while (v->eat_counter < v->num_of_times_each_phil_must_eat)
 	{
-		if (take_forks(v) == ERROR)
+		if (take_forks(v) != SUCCESS)
 			break ;
-		if (eating(v) == ERROR)
+		if (eating(v) != SUCCESS)
 		{
-			sem_post(v->sem_monitor);
 			put_forks(v);
 			break ;
 		}
 		put_forks(v);
-		if (sleeping(v) == ERROR)
+		if (sleeping(v) != SUCCESS)
 			break ;
 		print_msg(getime(v->time_start), v, MSG_THINKING, TURQUOISE);
 	}
-	sem_wait(v->sem_forks);
+	sem_wait(v->sem_monitor);
 	v->thread_compltd = TRUE;
-	sem_post(v->sem_forks);
+	sem_post(v->sem_monitor);
 	return (NULL);
 }
 
@@ -64,12 +63,18 @@ int	eating(t_var *v)
 		print_msg(v->time_start_eat, v, MSG_EATING, GREEN);
 	}
 	else
+	{
+		sem_post(v->sem_monitor);
 		return (ERROR);
+	}
 	while (getime(v->time_start) - v->time_start_eat < v->time_to_eat)
 		usleep(TIME_DELAY);
 	sem_wait(v->sem_monitor);
 	if (++v->eat_counter == v->num_of_times_each_phil_must_eat)
+	{
+		sem_post(v->sem_monitor);
 		return (ERROR);
+	}
 	else if (v->eat_counter == INT_MAX)
 		v->eat_counter = 0;
 	sem_post(v->sem_monitor);
@@ -89,9 +94,11 @@ int	sleeping(t_var *v)
 	time_start_sleep = getime(v->time_start);
 	print_msg(time_start_sleep, v, MSG_SLEEPING, GRAY);
 	while (getime(v->time_start) - time_start_sleep <= v->time_to_sleep)
+	{
 		if (v->time_start_eat - v->time_last_ate < v->time_to_die)
 			usleep(TIME_DELAY);
 		else
 			return (ERROR);
+	}
 	return (SUCCESS);
 }
