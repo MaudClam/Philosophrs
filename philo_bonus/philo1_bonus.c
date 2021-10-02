@@ -45,6 +45,7 @@ void	death(t_var *v)
 	sem_wait(v->sem_stdout);
 	printf(RED"%ld %d "MSG_DIED DEFAULT, getime(v->time_start), v->phil_id);
 	sem_wait(v->sem_monitor);
+	sem_post(v->sem_forks);
 	while (v->thread_compltd != TRUE)
 	{
 		sem_post(v->sem_monitor);
