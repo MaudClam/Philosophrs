@@ -23,7 +23,7 @@ int	sleeping(t_phil *phil)
 		if (getime(phil->v->time_start) - phil->time_last_ate > \
 														phil->v->time_to_die)
 			return (FALSE);
-		usleep(500);
+		usleep(TIME_MONITOR);
 	}
 	return (TRUE);
 }
