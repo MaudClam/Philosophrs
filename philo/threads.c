@@ -112,7 +112,7 @@ int	start_threads(t_var *v, t_phil **phil)
 			destroy_mutexes(v->array_of_mutexes, v->counter_of_mutexes);
 			return (ERROR);
 		}
-		usleep(TIME_DELAY);
+//		usleep(TIME_DELAY);
 		i++;
 	}
 	detach_threads(v, phil, v->pnu);
