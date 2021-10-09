@@ -20,7 +20,7 @@ int	sleeping(t_phil *phil)
 	while (getime(phil->v->time_start) - time_start_sleep < \
 														phil->v->time_to_sleep)
 	{
-		if (getime(phil->v->time_start) - phil->time_last_ate >= \
+		if (getime(phil->v->time_start) - phil->time_last_ate > \
 														phil->v->time_to_die)
 			return (FALSE);
 		usleep(500);
@@ -34,7 +34,7 @@ int	eating(t_phil *phil)
 
 	pthread_mutex_lock(&phil->mutex_t_eat);
 	time_start_eat = getime(phil->v->time_start);
-	if (getime(phil->v->time_start) - time_start_eat >= phil->v->time_to_die)
+	if (getime(phil->v->time_start) - time_start_eat > phil->v->time_to_die)
 	{
 		pthread_mutex_unlock(&phil->mutex_t_eat);
 		return (FALSE);
@@ -44,7 +44,7 @@ int	eating(t_phil *phil)
 	print_msg(getime(phil->v->time_start), phil, MSG_EATING);
 	while (getime(phil->v->time_start) - time_start_eat < phil->v->time_to_eat)
 	{
-		usleep(TIME_DELAY);
+		usleep(TIME_MONITOR);
 		phil->meal = LONG_MAX;
 		ft_swap(&phil->meal, &phil->belly);
 		ft_swap(&phil->belly, &phil->feces);

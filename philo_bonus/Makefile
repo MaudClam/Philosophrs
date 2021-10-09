@@ -39,7 +39,7 @@ $(NAME) :	$(OBJS)
 			$(CC) $(CFLAGS) $(TEST) $(OBJS) -o $(NAME)
 
 clean :
-			@rm -f $(OBJS) $(HEADER).gch
+			@rm -f $(OBJS)
 			@echo "Make clean done"
 
 fclean 	:	clean

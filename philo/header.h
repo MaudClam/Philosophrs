@@ -31,7 +31,11 @@
 # endif
 
 # ifndef TIME_DELAY
-#  define TIME_DELAY 			200
+#  define TIME_DELAY 			50
+# endif
+
+# ifndef TIME_MONITOR
+#  define TIME_MONITOR 			500
 # endif
 
 # define TRUE					1

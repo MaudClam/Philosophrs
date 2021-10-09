@@ -18,12 +18,12 @@ void	death_monitor(t_var *v, t_phil **phil)
 
 	while (v->pnu)
 	{
-		usleep(TIME_DELAY);
+		usleep(TIME_MONITOR);
 		i = 0;
 		while (i < v->pnu)
 		{
 			pthread_mutex_lock(&phil[i]->mutex_t_eat);
-			if (getime(v->time_start) - phil[i]->time_last_ate >= \
+			if (getime(v->time_start) - phil[i]->time_last_ate > \
 														phil[i]->v->time_to_die)
 			{
 				if (phil[i]->eat_counter != \

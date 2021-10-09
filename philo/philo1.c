@@ -24,12 +24,12 @@ void	game_over(t_var *v, t_phil **phil)
 
 	while (v->pnu)
 	{
-		usleep(TIME_DELAY);
+		usleep(TIME_MONITOR);
 		i = 0;
 		counter = 0;
 		while (i < v->pnu)
 		{
-			usleep(TIME_DELAY);
+			usleep(TIME_MONITOR);
 			pthread_mutex_lock(&phil[i]->mutex_t_eat);
 			counter += phil[i]->thread_compltd;
 			pthread_mutex_unlock(&phil[i]->mutex_t_eat);
