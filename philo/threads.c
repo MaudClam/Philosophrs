@@ -98,7 +98,7 @@ int	init_mutexes(t_var *v, t_phil **phil)
 
 int	start_threads(t_var *v, t_phil **phil)
 {
-	int		i;
+	int	i;
 
 	if (init_mutexes(v, phil))
 		return (ERROR);
