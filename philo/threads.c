@@ -106,10 +106,7 @@ int	start_threads(t_var *v, t_phil **phil)
 	v->time_start = getime(0);
 	while (i < v->pnu)
 	{
-		if (i != TEST_NUM_OF_THREADS && \
-			!pthread_create(&phil[i]->th, NULL, (void *)&philosopher, phil[i]))
-//			usleep(TIME_DELAY);
-		else
+		if (pthread_create(&phil[i]->th, NULL, (void *)&philosopher, phil[i]))
 		{
 			errmsg_mutex("Faled to create thread", ERROR, v);
 			destroy_mutexes(v->array_of_mutexes, v->counter_of_mutexes);
