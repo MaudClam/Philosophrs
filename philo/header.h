@@ -26,10 +26,6 @@
 #  define NUMBER_OF_MALLOCS		6
 # endif
 
-# ifndef TEST_NUM_OF_THREADS
-#  define TEST_NUM_OF_THREADS INT_MAX
-# endif
-
 # ifndef TIME_DELAY
 #  define TIME_DELAY 			50
 # endif
