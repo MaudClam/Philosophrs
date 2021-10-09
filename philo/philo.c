@@ -43,13 +43,7 @@ int	eating(t_phil *phil)
 	pthread_mutex_unlock(&phil->mutex_t_eat);
 	print_msg(getime(phil->v->time_start), phil, MSG_EATING);
 	while (getime(phil->v->time_start) - time_start_eat < phil->v->time_to_eat)
-	{
 		usleep(TIME_MONITOR);
-		phil->meal = LONG_MAX;
-		ft_swap(&phil->meal, &phil->belly);
-		ft_swap(&phil->belly, &phil->feces);
-		phil->feces = 0;
-	}
 	pthread_mutex_lock(&phil->mutex_t_eat);
 	if (phil->eat_counter++ == INT_MAX)
 		phil->eat_counter = 0;

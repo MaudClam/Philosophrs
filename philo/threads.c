@@ -108,7 +108,7 @@ int	start_threads(t_var *v, t_phil **phil)
 	{
 		if (i != TEST_NUM_OF_THREADS && \
 			!pthread_create(&phil[i]->th, NULL, (void *)&philosopher, phil[i]))
-			usleep(TIME_DELAY);
+//			usleep(TIME_DELAY);
 		else
 		{
 			errmsg_mutex("Faled to create thread", ERROR, v);

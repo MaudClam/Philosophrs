@@ -79,9 +79,6 @@ struct				s_phil
 {
 	int				i;
 	int				id;
-	long			meal;
-	long			belly;
-	long			feces;
 	int				eat_counter;
 	time_t			time_last_ate;
 	char			thread_compltd;
