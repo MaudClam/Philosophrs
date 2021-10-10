@@ -41,6 +41,7 @@
 # define OPEN				1
 # define CLOSE				0
 # define SEM_FORKS			"/forks"
+# define SEM_GARCON			"/garcon_no2"
 # define SEM_STDOUT			"/stdout"
 # define SEM_MONITOR		"/monitor_"
 # define DEFAULT			"\033[0m"
@@ -58,7 +59,7 @@
 
 typedef struct s_var
 {
-	int			num_of_phils;
+	int			phnu;
 	int			time_to_die;
 	int			time_to_eat;
 	int			time_to_sleep;
@@ -67,6 +68,7 @@ typedef struct s_var
 	int			eat_counter;
 	int			status;
 	sem_t		*sem_forks;
+	sem_t		*sem_garcon_no2;
 	sem_t		*sem_stdout;
 	sem_t		*sem_monitor;
 	char		*sem_monitor_name;

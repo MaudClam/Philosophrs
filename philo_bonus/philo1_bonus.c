@@ -86,7 +86,7 @@ void	kill_phill(t_var *v, int signal)
 	int	i;
 
 	i = 1;
-	while (i <= v->num_of_phils)
+	while (i <= v->phnu)
 	{
 		usleep(TIME_DELAY);
 		if (v->pids[i] > 1)
@@ -105,6 +105,8 @@ int	free_mem(t_var *v, int err)
 	v->pids = NULL;
 	if (v->sem_forks && sem_close(v->sem_forks) == EINVAL)
 		errmsg("v->sem_forks is not a valid semaphore descriptor", errno);
+	if (v->sem_garcon_no2 && sem_close(v->sem_garcon_no2) == EINVAL)
+		errmsg("v->sem_garcon_no2 is not a valid semaphore descriptor", errno);
 	if (v->sem_stdout && sem_close(v->sem_stdout) == EINVAL)
 		errmsg("v->sem_stdout is not a valid semaphore descriptor", errno);
 	sem_unlink(SEM_FORKS);

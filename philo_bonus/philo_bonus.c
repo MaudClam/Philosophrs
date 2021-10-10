@@ -39,13 +39,14 @@ int	take_forks(t_var *v)
 	time_t	time_start_bifurcate;
 
 	time_start_bifurcate = getime(v->time_start);
-	if (v->num_of_phils == 1)
+	if (v->phnu == 1)
 	{
 		print_msg(time_start_bifurcate, v, MSG_TAKEN_FORK, YELLOW);
 		while (getime(v->time_start) - time_start_bifurcate <= v->time_to_die)
 			usleep(TIME_DELAY);
 		return (ERROR);
 	}
+	sem_wait(v->sem_garcon_no2);
 	sem_wait(v->sem_forks);
 	print_msg(getime(v->time_start), v, MSG_TAKEN_FORK, YELLOW);
 	sem_wait(v->sem_forks);
@@ -85,6 +86,7 @@ void	put_forks(t_var *v)
 {
 	sem_post(v->sem_forks);
 	sem_post(v->sem_forks);
+	sem_post(v->sem_garcon_no2);
 }
 
 int	sleeping(t_var *v)

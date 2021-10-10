@@ -24,11 +24,12 @@ void	timer(useconds_t dt)
 {
 	struct timeval		tv;
 	static time_t		t1;
-	
+
 	gettimeofday(&tv, NULL);
 	if (dt == START_COUNTING)
 		t1 = tv.tv_sec * 1000000 + tv.tv_usec;
 	else
+	{
 		while (tv.tv_sec * 1000000 + tv.tv_usec - t1 < dt)
 		{
 			if (!usleep(dt - \
@@ -36,12 +37,13 @@ void	timer(useconds_t dt)
 				break ;
 			gettimeofday(&tv, NULL);
 		}
+	}
 }
 
 void	phil_timer(time_t time_start_game, time_t t1, time_t dt)
 {
 	time_t	t2;
-	
+
 	t2 = getime(time_start_game);
 	usleep((useconds_t)(dt - (t2 - t1)) / 10 * 8);
 	t2 = getime(time_start_game);

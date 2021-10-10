@@ -52,6 +52,6 @@ fclean 	:	clean
 re :		fclean all
 
 norm:
-			norminette *.c *.h
+			norminette
 
 .PHONY :	all clean fclean re norm

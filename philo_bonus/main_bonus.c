@@ -17,10 +17,10 @@ int	wait_phils_signals(t_var *v)
 	int	i;
 
 	i = 0;
-	while (i++ <= v->num_of_phils)
+	while (i++ <= v->phnu)
 		sem_post(v->sem_stdout);
 	i = 0;
-	while (i < v->num_of_phils)
+	while (i < v->phnu)
 	{
 		if (waitpid(-1, &v->status, 0) != ERROR)
 		{
@@ -41,7 +41,7 @@ int	wait_phils_signals(t_var *v)
 int	start_processes(t_var *v)
 {
 	sem_wait(v->sem_stdout);
-	while (v->phil_id++ < v->num_of_phils)
+	while (v->phil_id++ < v->phnu)
 	{
 		v->pids[v->phil_id] = fork();
 		if (v->pids[v->phil_id] == ERROR)
@@ -61,11 +61,19 @@ int	start_processes(t_var *v)
 int	open_semaphores(t_var *v)
 {
 	sem_unlink(SEM_FORKS);
-	v->sem_forks = sem_open(SEM_FORKS, O_CREAT, S_IRWXU, v->num_of_phils);
+	v->sem_forks = sem_open(SEM_FORKS, O_CREAT, S_IRWXU, v->phnu);
 	if (v->sem_forks == SEM_FAILED)
 	{
 		errmsg("sem_open() error", errno);
 		v->sem_forks = NULL;
+		return (ERROR);
+	}
+	sem_unlink(SEM_GARCON);
+	v->sem_garcon_no2 = sem_open(SEM_GARCON, O_CREAT, S_IRWXU, v->phnu / 2);
+	if (v->sem_garcon_no2 == SEM_FAILED)
+	{
+		errmsg("sem_open() error", errno);
+		v->sem_garcon_no2 = NULL;
 		return (ERROR);
 	}
 	sem_unlink(SEM_STDOUT);
@@ -83,8 +91,8 @@ int	check_args(t_var *v, int argc, char **argv)
 {
 	if (argc < 5 || argc > 6)
 		return (msg_bad_arguments(ERROR));
-	v->num_of_phils = ft_atoi(argv[1]);
-	if (v->num_of_phils < 1 || v->num_of_phils > 200)
+	v->phnu = ft_atoi(argv[1]);
+	if (v->phnu < 1 || v->phnu > 200)
 		return (msg_bad_arguments(ERROR));
 	v->time_to_die = ft_atoi(argv[2]);
 	if (v->time_to_die < 60)
@@ -110,10 +118,10 @@ int	main(int argc, char **argv)
 	memset(&v, 0, sizeof(t_var));
 	if (check_args(&v, argc, argv) == ERROR)
 		exit(EXIT_FAILURE);
-	v.pids = (pid_t *)malloc(sizeof(pid_t) * (v.num_of_phils + 1));
+	v.pids = (pid_t *)malloc(sizeof(pid_t) * (v.phnu + 1));
 	if (!v.pids)
 		exit(errmsg("malloc() error", errno));
-	memset(v.pids, -1, sizeof(pid_t) * (v.num_of_phils + 1));
+	memset(v.pids, -1, sizeof(pid_t) * (v.phnu + 1));
 	if (open_semaphores(&v) == ERROR)
 		exit(free_mem(&v, EXIT_FAILURE));
 	if (start_processes(&v) == ERROR)
