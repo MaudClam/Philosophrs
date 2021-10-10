@@ -16,6 +16,7 @@ SRCS =		main.c \
 			philo.c \
 			philo1.c \
 			threads.c \
+			time.c \
 			utils.c \
 			utils1.c \
 			utils2.c

@@ -14,21 +14,21 @@
 
 void	death_monitor(t_var *v, t_phil **phil)
 {
-	int		i;
+	int	i;
 
-	while (v->pnu)
+	while (TRUE)
 	{
-		usleep(TIME_MONITOR);
+		timer(START_COUNTING);
 		i = 0;
-		while (i < v->pnu)
+		while (i < v->phnu)
 		{
 			pthread_mutex_lock(&phil[i]->mutex_t_eat);
-			if (getime(v->time_start) - phil[i]->time_last_ate > \
-														phil[i]->v->time_to_die)
+			if ((getime(v->time_start_game) - phil[i]->time_last_ate) / \
+		FIND_TIMEDEATH_PRECSN > phil[i]->v->time_to_die / FIND_TIMEDEATH_PRECSN)
 			{
 				if (phil[i]->eat_counter != \
-				phil[i]->v->number_of_times_each_philosopher_must_eat)
-					it_is_death(getime(v->time_start), phil[i]);
+				phil[i]->v->num_of_times_each_phil_must_eat)
+					it_is_death(getime(v->time_start_game), phil[i]);
 				pthread_mutex_unlock(&phil[i]->mutex_t_eat);
 				game_over(v, phil);
 				return ;
@@ -36,6 +36,7 @@ void	death_monitor(t_var *v, t_phil **phil)
 			pthread_mutex_unlock(&phil[i]->mutex_t_eat);
 			i++;
 		}
+		timer(MONITORING_INTERVAL);
 	}
 }
 
@@ -80,15 +81,15 @@ int	init_mutexes(t_var *v, t_phil **phil)
 	int	i;
 
 	i = 0;
-	if (init_mutex(v->array_of_mutexes, (v->pnu * 2 + 1), \
+	if (init_mutex(v->array_of_mutexes, (v->phnu * 2 + 1), \
 									&v->counter_of_mutexes, &v->mutex_stdout))
 		return (errmsg("init_mutexes()1 error in init_mutexess()", ERROR));
-	while (i < v->pnu)
+	while (i < v->phnu)
 	{
-		if (init_mutex(v->array_of_mutexes, (v->pnu * 2 + 1), \
+		if (init_mutex(v->array_of_mutexes, (v->phnu * 2 + 1), \
 						&v->counter_of_mutexes, &phil[i]->f[i]->mutex_fork))
 			return (errmsg("init_mutexes()2 error in init_mutexess()", ERROR));
-		if (init_mutex(v->array_of_mutexes, (v->pnu * 2 + 1), \
+		if (init_mutex(v->array_of_mutexes, (v->phnu * 2 + 1), \
 								&v->counter_of_mutexes, &phil[i]->mutex_t_eat))
 			return (errmsg("init_mutexes()3 error in init_mutexess()", ERROR));
 		i++;
@@ -98,13 +99,13 @@ int	init_mutexes(t_var *v, t_phil **phil)
 
 int	start_threads(t_var *v, t_phil **phil)
 {
-	int		i;
+	int	i;
 
 	if (init_mutexes(v, phil))
 		return (ERROR);
 	i = 0;
-	v->time_start = getime(0);
-	while (i < v->pnu)
+	v->time_start_game = getime(0);
+	while (i < v->phnu)
 	{
 		if (pthread_create(&phil[i]->th, NULL, (void *)&philosopher, phil[i]))
 		{
@@ -112,10 +113,10 @@ int	start_threads(t_var *v, t_phil **phil)
 			destroy_mutexes(v->array_of_mutexes, v->counter_of_mutexes);
 			return (ERROR);
 		}
-		usleep(TIME_DELAY);
 		i++;
+		usleep(TIME_DELAY);
 	}
-	detach_threads(v, phil, v->pnu);
+	detach_threads(v, phil, v->phnu);
 	death_monitor(v, phil);
 	destroy_mutexes(v->array_of_mutexes, v->counter_of_mutexes);
 	return (SUCCESS);

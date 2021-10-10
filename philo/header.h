@@ -30,10 +30,19 @@
 #  define TIME_DELAY 			50
 # endif
 
-# ifndef TIME_MONITOR
-#  define TIME_MONITOR 			500
+# ifndef PHIL_TIMER_PRECISION
+#  define PHIL_TIMER_PRECISION 	200
 # endif
 
+# ifndef MONITORING_INTERVAL
+#  define MONITORING_INTERVAL 	5000
+# endif
+
+# ifndef FIND_TIMEDEATH_PRECSN
+#  define FIND_TIMEDEATH_PRECSN	5000
+# endif
+
+# define START_COUNTING			0
 # define TRUE					1
 # define FALSE					0
 # define ERROR					-1
@@ -53,12 +62,12 @@ typedef struct s_phil			t_phil;
 
 struct				s_var
 {
-	int				pnu;
-	int				time_to_die;
-	int				time_to_eat;
-	int				time_to_sleep;
-	int				number_of_times_each_philosopher_must_eat;
-	time_t			time_start;
+	int				phnu;
+	time_t			time_to_die;
+	time_t			time_to_eat;
+	time_t			time_to_sleep;
+	int				num_of_times_each_phil_must_eat;
+	time_t			time_start_game;
 	void			**array_of_mallocs;
 	int				counter_of_mallocs;
 	void			**array_of_mutexes;
@@ -78,27 +87,34 @@ struct				s_phil
 	int				eat_counter;
 	time_t			time_last_ate;
 	char			thread_compltd;
+	int				first;
+	int				seccond;
 	pthread_mutex_t	mutex_t_eat;
 	pthread_t		th;
 	t_var			*v;
 	t_fork			**f;
 };
 /*
+**		Initialization functions, main.c
+*/
+int		check_args(t_var *v, int argc, char **argv);
+t_fork	**init_forks(t_var *v);
+t_phil	**init_phil(t_var *v);
+int		init_variables(t_var *v, t_fork **s, t_phil **phil);
+/*
 **		Philosopher functions, philo.c
 */
 void	*philosopher(t_phil *phil);
-int		take_forks(int i, t_phil *phil);
-int		put_forks(int i, t_phil *phil);
+int		take_forks(t_phil *phil);
+void	put_forks(t_phil *phil);
 int		eating(t_phil *phil);
-int		sleeping(t_phil *phil);
+void	sleeping(t_phil *phil);
 /*
 **		Philosopher functions, philo1.c
 */
-void	print_msg(time_t time, t_phil *phil, char *msg);
-time_t	getime(time_t start);
-void	it_is_death(time_t time, t_phil *phil);
 void	game_over(t_var *v, t_phil **phil);
-int		left(int right, int n);
+void	it_is_death(time_t time, t_phil *phil);
+void	print_msg(time_t time, t_phil *phil, char *msg);
 /*
 **		Thread functions, threads.c
 */
@@ -108,12 +124,11 @@ int		init_mutex(void **a, int a_size, int *counter, pthread_mutex_t *mutex);
 void	detach_threads(t_var *v, t_phil **phil, int counter);
 void	death_monitor(t_var *v, t_phil **phil);
 /*
-**		Initialization functions, main.c
+**		Time functions, time.c
 */
-int		check_args(t_var *v, int argc, char **argv);
-t_fork	**init_forks(t_var *v);
-t_phil	**init_phil(t_var *v);
-int		init_variables(t_var *v, t_fork **s, t_phil **phil);
+time_t	getime(time_t start);
+void	timer(useconds_t dt);
+void	phil_timer(time_t time_start_game, time_t t1, time_t dt);
 /*
 **		Malloc service and exit functions, utils.c
 */
@@ -132,7 +147,6 @@ void	ft_putnbr_fd(int n, int fd);
 /*
 **		Secondary functions, utils2.c
 */
-void	ft_swap(time_t *a, time_t *b);
 int		ft_atoi(const char *str);
 int		msg_bad_arguments(void);
 

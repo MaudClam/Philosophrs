@@ -14,28 +14,21 @@
 
 int	msg_bad_arguments(void)
 {
-	printf("\033[1mBad arguments\033[0m\nusage:\
+	ft_putstr_fd("\033[1mBad arguments\033[0m\nusage:\
 \t\033[1mphilo\033[0m number_of_philosophers time_to_die time_to_eat \
-time_to_sleep [number_of_times_each_philosopher_must_eat]\n\n\
+time_to_sleep [num_of_times_each_phil_must_eat]\n\n\
 \t\033[1mnumber_of_philosophers\033[0m - number of philosophers from 1 to 200\n\
 \t\033[1mtime_to_die\033[0m - time in milliseconds from 60 to INT_MAX\n\
 \t\033[1mtime_to_eat\033[0m - time in milliseconds from 60 to INT_MAX\n\
 \t\033[1mtime_to_sleep\033[0m - time in milliseconds from 60 to INT_MAX\n\
-\t\033[1m[number_of_times_each_philosopher_must_eat]\033[0m - from 1 to \
+\t\033[1m[num_of_times_each_phil_must_eat]\033[0m - from 1 to \
 INT_MAX\n\n\033[1mPhilo\033[0m is an emulator of the classic \033[1mDining \
 Philosophers Problem\033[0m used in computer science to illustrate \
 synchronization problems.\n\
 The tutorial project was written by Maud Clam [mclam@student.21-school.ru] \
 in pure C without a single nail.\n\
-For more details, see: https://profile.intra.42.fr/searches\n\n");
+For details, see: https://profile.intra.42.fr/searches\n\n", STDOUT_FILENO);
 	return (ERROR);
-}
-
-void	ft_swap(long *a, long *b)
-{
-	*a = *a ^ *b;
-	*b = *a ^ *b;
-	*a = *a ^ *b;
 }
 
 /*
@@ -51,14 +44,6 @@ static int	islonglong(unsigned long nbr, int sign)
 	return ((int)nbr);
 }
 
-static int	ft_isspace(char c)
-{
-	if (c == '\t' || c == '\n' || c == '\r' \
-					|| c == '\v' || c == '\f' || c == ' ')
-		return (1);
-	return (0);
-}
-
 int	ft_atoi(const char *str)
 {
 	unsigned long int	nbr;
@@ -70,7 +55,7 @@ int	ft_atoi(const char *str)
 	if (!str || !str[0])
 		return (0);
 	i = 0;
-	while (str[i] && ft_isspace(str[i]))
+	while (str[i] && str[i] == ' ')
 		i++;
 	if (str[i] == '-')
 	{

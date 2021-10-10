@@ -12,63 +12,56 @@
 
 #include "header.h"
 
-int	left(int i, int n)
-{
-	return ((i + n - 1) % n);
-}
-
 void	game_over(t_var *v, t_phil **phil)
 {
 	int		i;
 	int		counter;
 
-	while (v->pnu)
+	while (v->phnu)
 	{
-		usleep(TIME_MONITOR);
+		timer(START_COUNTING);
 		i = 0;
 		counter = 0;
-		while (i < v->pnu)
+		while (i < v->phnu)
 		{
-			usleep(TIME_MONITOR);
 			pthread_mutex_lock(&phil[i]->mutex_t_eat);
 			counter += phil[i]->thread_compltd;
 			pthread_mutex_unlock(&phil[i]->mutex_t_eat);
 			i++;
 		}
-		if (counter == v->pnu)
+		if (counter == v->phnu)
 		{
-			if (phil[0]->v->number_of_times_each_philosopher_must_eat == 0)
-				printf("%s", MSG_GAME_OVER_RED);
+			if (phil[0]->v->num_of_times_each_phil_must_eat == 0)
+				ft_putstr_fd(MSG_GAME_OVER_RED, STDOUT_FILENO);
 			else
-				printf("%s", MSG_GAME_OVER_GREEN);
+				ft_putstr_fd(MSG_GAME_OVER_GREEN, STDOUT_FILENO);
 			return ;
 		}
+		timer(MONITORING_INTERVAL);
 	}
 }
 
 void	it_is_death(time_t time, t_phil *phil)
 {
-	phil->v->number_of_times_each_philosopher_must_eat = 0;
+	phil->v->num_of_times_each_phil_must_eat = 0;
 	pthread_mutex_lock(&phil->v->mutex_stdout);
-	printf("%ld %d%s", time, phil->id, MSG_DIED);
+	ft_putnbr_fd((int)(time / 1000), STDOUT_FILENO);
+	ft_putchar_fd(' ', STDOUT_FILENO);
+	ft_putnbr_fd(phil->id, STDOUT_FILENO);
+	ft_putstr_fd(MSG_DIED, STDOUT_FILENO);
 	pthread_mutex_unlock(&phil->v->mutex_stdout);
 }
 
 void	print_msg(time_t time, t_phil *phil, char *msg)
 {
-	if (phil->v->number_of_times_each_philosopher_must_eat != 0 && \
-	getime(phil->v->time_start) - phil->time_last_ate < phil->v->time_to_die)
+	if (phil->v->num_of_times_each_phil_must_eat != 0 && \
+	getime(phil->v->time_start_game) - phil->time_last_ate < phil->v->time_to_die)
 	{
 		pthread_mutex_lock(&phil->v->mutex_stdout);
-		printf("%ld %d%s", time, phil->id, msg);
+		ft_putnbr_fd((int)(time / 1000), STDOUT_FILENO);
+		ft_putchar_fd(' ', STDOUT_FILENO);
+		ft_putnbr_fd(phil->id, STDOUT_FILENO);
+		ft_putstr_fd(msg, STDOUT_FILENO);
 		pthread_mutex_unlock(&phil->v->mutex_stdout);
 	}
-}
-
-time_t	getime(time_t start)
-{
-	struct timeval	tv;
-
-	gettimeofday(&tv, NULL);
-	return ((tv.tv_sec * 1000) + tv.tv_usec / 1000 - start);
 }
