@@ -39,7 +39,7 @@
 # endif
 
 # ifndef FIND_TIMEDEATH_PRECSN
-#  define FIND_TIMEDEATH_PRECSN	10000
+#  define FIND_TIMEDEATH_PRECSN	5000
 # endif
 
 # define START_COUNTING			0
