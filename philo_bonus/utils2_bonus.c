@@ -37,7 +37,7 @@ void	print_msg(time_t time, t_var *v, char *msg, char *color)
 	{
 		sem_wait(v->sem_stdout);
 		ft_putstr_fd(color, STDOUT_FILENO);
-		ft_putnbr_fd((int)time / 1000, STDOUT_FILENO);
+		ft_putnbr_fd((int)(time / 1000), STDOUT_FILENO);
 		ft_putchar_fd(' ', STDOUT_FILENO);
 		ft_putnbr_fd(v->phil_id, STDOUT_FILENO);
 		ft_putstr_fd(msg, STDOUT_FILENO);
