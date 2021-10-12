@@ -25,39 +25,16 @@ size_t	ft_strlen(const char *s)
 	return (len);
 }
 
+void	ft_putchar_fd(char c, int fd)
+{
+	write(fd, &c, 1);
+}
+
 void	ft_putstr_fd(char *s, int fd)
 {
 	if (!s)
 		return ;
 	write(fd, s, ft_strlen(s));
-}
-
-int	ft_atoi(const char *str)
-{
-	unsigned int	nbr;
-	int				sign;
-	int				i;
-
-	nbr = 0;
-	sign = 1;
-	if (!str || !str[0])
-		return (0);
-	i = 0;
-	while (str[i] && str[i] == ' ')
-		i++;
-	if (str[i] == '-')
-	{
-		sign = -1;
-		i++;
-	}
-	else if (str[i] == '+')
-		i++;
-	while (str[i] && str[i] >= '0' && str[i] <= '9')
-	{
-		nbr = nbr * 10 + (str[i] - '0');
-		i++;
-	}
-	return (nbr * sign);
 }
 
 /*

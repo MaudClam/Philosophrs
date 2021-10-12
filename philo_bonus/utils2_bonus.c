@@ -36,7 +36,12 @@ void	print_msg(time_t time, t_var *v, char *msg, char *color)
 	if (getime(v->time_start) - v->time_last_ate < v->time_to_die)
 	{
 		sem_wait(v->sem_stdout);
-		printf("%s%ld %d %s"DEFAULT, color, time, v->phil_id, msg);
+		ft_putnbr_fd((int)time / 1000, STDOUT_FILENO);
+		ft_putchar_fd(' ', STDOUT_FILENO);
+		ft_putnbr_fd(v->phil_id, STDOUT_FILENO);
+		ft_putstr_fd(color, STDOUT_FILENO);
+		ft_putstr_fd(msg, STDOUT_FILENO);
+		ft_putstr_fd(DEFAULT, STDOUT_FILENO);
 		sem_post(v->sem_stdout);
 	}
 }
@@ -51,37 +56,46 @@ int	errmsg(char *str, int err)
 	return (err);
 }
 
-char	*indexname(char const *name, int index)
+int	free_mem(t_var *v, int err)
 {
-	char	*str;
-	int		len;
-	int		i;
-
-	if (index < 1)
-		return ((char *)name);
-	len = (int)ft_strlen(name) + 1;
-	i = index;
-	while (i > 9 && ++len)
-		i /= 10;
-	str = malloc(len + 1);
-	if (!str)
-		return (NULL);
-	i = -1;
-	while (name && name[++i])
-		str[i] = name[i];
-	str[len] = '\0';
-	while (len-- && index)
-	{
-		str[len] = index % 10 + '0';
-		index /= 10;
-	}
-	return (str);
+	free(v->pids);
+	v->pids = NULL;
+	if (v->sem_forks && sem_close(v->sem_forks) == EINVAL)
+		errmsg("v->sem_forks is not a valid semaphore descriptor", errno);
+	if (v->sem_garcon_no2 && sem_close(v->sem_garcon_no2) == EINVAL)
+		errmsg("v->sem_garcon_no2 is not a valid semaphore descriptor", errno);
+	if (v->sem_stdout && sem_close(v->sem_stdout) == EINVAL)
+		errmsg("v->sem_stdout is not a valid semaphore descriptor", errno);
+	sem_unlink(SEM_FORKS);
+	sem_unlink(SEM_GARCON );
+	sem_unlink(SEM_STDOUT);
+	return (err);
 }
 
-time_t	getime(time_t start)
+int	ft_atoi(const char *str)
 {
-	struct timeval	tv;
+	unsigned int	nbr;
+	int				sign;
+	int				i;
 
-	gettimeofday(&tv, NULL);
-	return ((tv.tv_sec * 1000) + tv.tv_usec / 1000 - start);
+	nbr = 0;
+	sign = 1;
+	if (!str || !str[0])
+		return (0);
+	i = 0;
+	while (str[i] && str[i] == ' ')
+		i++;
+	if (str[i] == '-')
+	{
+		sign = -1;
+		i++;
+	}
+	else if (str[i] == '+')
+		i++;
+	while (str[i] && str[i] >= '0' && str[i] <= '9')
+	{
+		nbr = nbr * 10 + (str[i] - '0');
+		i++;
+	}
+	return (nbr * sign);
 }

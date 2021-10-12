@@ -14,46 +14,42 @@
 
 void	death_monitor(t_var *v)
 {
-	if (sem_monitor(v, OPEN) != SUCCESS)
-		exit(free_mem(v, errmsg("failed to open sem_monitor", EXIT_FAILURE)));
+	start_thread(v);
+	while (TRUE)
+	{
+		timer(START_COUNTING);
+		sem_wait(v->sem_monitor);
+		if ((getime(v->time_start) - v->time_last_ate) / FIND_TIMEDEATH_PRECSN \
+			<= v->time_to_die / FIND_TIMEDEATH_PRECSN && \
+			v->eat_counter == v->num_of_times_each_phil_must_eat && \
+			v->thread_compltd == TRUE)
+		{
+			sem_post(v->sem_monitor);
+			sem_monitor(v, CLOSE);
+			exit(free_mem(v, EXIT_SUCCESS));
+		}
+		else if ((getime(v->time_start) - v->time_last_ate) /
+				 FIND_TIMEDEATH_PRECSN > v->time_to_die / FIND_TIMEDEATH_PRECSN)
+		{
+			sem_post(v->sem_monitor);
+			death(v);
+			exit(free_mem(v, EXIT_FAILURE));
+		}
+		sem_post(v->sem_monitor);
+		timer(MONITORING_INTERVAL);
+	}
+}
+
+void	start_thread(t_var *v)
+{
+	if (sem_monitor(v, OPEN) == ERROR)
+		exit(free_mem(v, EXIT_FAILURE));
 	sem_wait(v->sem_stdout);
 	v->time_start = getime(0);
 	usleep(v->phil_id * TIME_DELAY);
 	if (pthread_create(&v->th, NULL, (void *)&philosopher, v) != SUCCESS)
 		exit(free_mem(v, errmsg("failed to create thread", errno)));
 	pthread_detach(v->th);
-	while (TRUE)
-	{
-		sem_wait(v->sem_monitor);
-		if (getime(v->time_start) - v->time_last_ate < v->time_to_die && \
-			v->eat_counter == v->num_of_times_each_phil_must_eat && \
-			v->thread_compltd == TRUE && sem_monitor(v, CLOSE) == SUCCESS)
-			exit(free_mem(v, EXIT_SUCCESS));
-		else if (getime(v->time_start) - v->time_last_ate >= v->time_to_die)
-		{
-			death(v);
-			exit(free_mem(v, EXIT_FAILURE));
-		}
-		sem_post(v->sem_monitor);
-		usleep(MONITOR_DELAY);
-	}
-}
-
-void	death(t_var *v)
-{
-	sem_post(v->sem_monitor);
-	sem_wait(v->sem_stdout);
-	printf(RED"%ld %d "MSG_DIED DEFAULT, getime(v->time_start), v->phil_id);
-	sem_post(v->sem_forks);
-	sem_wait(v->sem_monitor);
-	while (v->thread_compltd != TRUE)
-	{
-		sem_post(v->sem_monitor);
-		usleep(TIME_DELAY);
-		sem_wait(v->sem_monitor);
-	}
-	sem_post(v->sem_monitor);
-	sem_monitor(v, CLOSE);
 }
 
 int	sem_monitor(t_var *v, char mode)
@@ -62,11 +58,16 @@ int	sem_monitor(t_var *v, char mode)
 	{
 		v->sem_monitor_name = indexname(SEM_MONITOR, v->phil_id);
 		if (!v->sem_monitor_name)
-			return (free_mem(v, errmsg("error sem_monitor_name", ERROR)));
+			return (errmsg("error creating sem_monitor_name", ERROR));
 		sem_unlink(v->sem_monitor_name);
 		v->sem_monitor = sem_open(v->sem_monitor_name, O_CREAT, S_IRWXU, 1);
 		if (v->sem_monitor == SEM_FAILED)
-			return (errmsg("sem_open() error", errno));
+		{
+			errmsg("sem_open() error in sem_monitor()", errno);
+			free(v->sem_monitor_name);
+			v->sem_monitor_name = NULL;
+			return (ERROR);
+		}
 	}
 	else
 	{
@@ -76,9 +77,26 @@ int	sem_monitor(t_var *v, char mode)
 		sem_unlink(v->sem_monitor_name);
 		free(v->sem_monitor_name);
 		v->sem_monitor_name = NULL;
-		usleep(MONITOR_DELAY);
 	}
 	return (SUCCESS);
+}
+
+void	death(t_var *v)
+{
+	sem_wait(v->sem_stdout);
+	ft_putnbr_fd((int)(getime(v->time_start) / 1000), STDOUT_FILENO);
+	ft_putchar_fd(' ', STDOUT_FILENO);
+	ft_putnbr_fd(v->phil_id, STDOUT_FILENO);
+	ft_putstr_fd(RED MSG_DIED DEFAULT, STDOUT_FILENO);
+	sem_wait(v->sem_monitor);
+	while (v->thread_compltd != TRUE)
+	{
+		sem_post(v->sem_monitor);
+		usleep(MONITORING_INTERVAL);
+		sem_wait(v->sem_monitor);
+	}
+	sem_post(v->sem_monitor);
+	sem_monitor(v, CLOSE);
 }
 
 void	kill_phill(t_var *v, int signal)
@@ -97,19 +115,4 @@ void	kill_phill(t_var *v, int signal)
 		}
 		i++;
 	}
-}
-
-int	free_mem(t_var *v, int err)
-{
-	free(v->pids);
-	v->pids = NULL;
-	if (v->sem_forks && sem_close(v->sem_forks) == EINVAL)
-		errmsg("v->sem_forks is not a valid semaphore descriptor", errno);
-	if (v->sem_garcon_no2 && sem_close(v->sem_garcon_no2) == EINVAL)
-		errmsg("v->sem_garcon_no2 is not a valid semaphore descriptor", errno);
-	if (v->sem_stdout && sem_close(v->sem_stdout) == EINVAL)
-		errmsg("v->sem_stdout is not a valid semaphore descriptor", errno);
-	sem_unlink(SEM_FORKS);
-	sem_unlink(SEM_STDOUT);
-	return (err);
 }

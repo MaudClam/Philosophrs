@@ -27,35 +27,44 @@
 # include <signal.h>
 
 # ifndef TIME_DELAY
-#  define TIME_DELAY 		300
+#  define TIME_DELAY 			50
 # endif
 
-# ifndef MONITOR_DELAY
-#  define MONITOR_DELAY 	1000
+# ifndef PHIL_TIMER_PRECISION
+#  define PHIL_TIMER_PRECISION 	200
 # endif
 
-# define TRUE				1
-# define FALSE				0
-# define ERROR				-1
-# define SUCCESS			0
-# define OPEN				1
-# define CLOSE				0
-# define SEM_FORKS			"/forks"
-# define SEM_GARCON			"/garcon_no2"
-# define SEM_STDOUT			"/stdout"
-# define SEM_MONITOR		"/monitor_"
-# define DEFAULT			"\033[0m"
-# define YELLOW				"\033[33m"
-# define GREEN				"\033[32m"
-# define GRAY				"\033[37m"
-# define TURQUOISE			"\033[36m"
-# define RED				"\033[31m"
-# define MSG_TAKEN_FORK		"has taken a fork\n"
-# define MSG_EATING			"is eating\n"
-# define MSG_SLEEPING		"is sleeping\n"
-# define MSG_THINKING		"is thinking\n"
-# define MSG_DIED			"is died\n"
-# define MSG_GAME_OVER		"====GAME OVER!====\n"
+# ifndef MONITORING_INTERVAL
+#  define MONITORING_INTERVAL 	5000
+# endif
+
+# ifndef FIND_TIMEDEATH_PRECSN
+#  define FIND_TIMEDEATH_PRECSN	5000
+# endif
+
+# define START_COUNTING			0
+# define TRUE					1
+# define FALSE					0
+# define ERROR					-1
+# define SUCCESS				0
+# define OPEN					1
+# define CLOSE					0
+# define SEM_FORKS				"/forks"
+# define SEM_GARCON				"/garcon_no2"
+# define SEM_STDOUT				"/stdout"
+# define SEM_MONITOR			"/monitor_"
+# define DEFAULT				"\033[0m"
+# define YELLOW					"\033[33m"
+# define GREEN					"\033[32m"
+# define GRAY					"\033[37m"
+# define TURQUOISE				"\033[36m"
+# define RED					"\033[31m"
+# define MSG_TAKEN_FORK			"has taken a fork\n"
+# define MSG_EATING				"is eating\n"
+# define MSG_SLEEPING			"is sleeping\n"
+# define MSG_THINKING			"is thinking\n"
+# define MSG_DIED				"is died\n"
+# define MSG_GAME_OVER			"====GAME OVER!====\n"
 
 typedef struct s_var
 {
@@ -74,12 +83,18 @@ typedef struct s_var
 	char		*sem_monitor_name;
 	pid_t		*pids;
 	time_t		time_start;
-	time_t		time_start_eat;
 	time_t		time_last_ate;
 	pthread_t	th;
 	char		thread_compltd;
 }				t_var;
 
+/*
+**		main_bonus.c
+*/
+int		check_args(t_var *v, int argc, char **argv);
+int		open_semaphores(t_var *v);
+int		start_processes(t_var *v);
+int		wait_phils_signals(t_var *v);
 /*
 **		philo_bonus.c
 */
@@ -91,24 +106,24 @@ int		sleeping(t_var *v);
 /*
 **		philo1_bonus.c
 */
+void	start_thread(t_var *v);
+int		sem_monitor(t_var *v, char mode);
 void	death_monitor(t_var *v);
 void	death(t_var *v);
-int		sem_monitor(t_var *v, char mode);
 void	kill_phill(t_var *v, int signal);
-int		free_mem(t_var *v, int err);
 /*
-**		main_bonus.c
+**		time_bonus.c
 */
-int		check_args(t_var *v, int argc, char **argv);
-int		open_semaphores(t_var *v);
-int		start_processes(t_var *v);
-int		wait_phils_signals(t_var *v);
+time_t	getime(time_t start);
+void	timer(useconds_t dt);
+void	phil_timer(time_t time_start_game, time_t t1, time_t dt);
+char	*indexname(char const *name, int index);
 /*
 **		utils1_bonus.c
 */
 size_t	ft_strlen(const char *s);
+void	ft_putchar_fd(char c, int fd);
 void	ft_putstr_fd(char *s, int fd);
-int		ft_atoi(const char *str);
 void	ft_putnbr_fd(int n, int fd);
 /*
 **		utils2_bonus.c
@@ -116,7 +131,7 @@ void	ft_putnbr_fd(int n, int fd);
 int		msg_bad_arguments(int err);
 void	print_msg(time_t time, t_var *v, char *msg, char *color);
 int		errmsg(char *str, int err);
-char	*indexname(char const *name, int index);
-time_t	getime(time_t start);
+int		free_mem(t_var *v, int err);
+int		ft_atoi(const char *str);
 
 #endif

@@ -44,16 +44,14 @@ int	start_processes(t_var *v)
 	while (v->phil_id++ < v->phnu)
 	{
 		v->pids[v->phil_id] = fork();
-		if (v->pids[v->phil_id] == ERROR)
+		if (v->pids[v->phil_id] == SUCCESS)
+			death_monitor(v);
+		else if (v->pids[v->phil_id] == ERROR)
 		{
 			errmsg("fork() call error", errno);
 			kill_phill(v, SIGKILL);
 			return (ERROR);
 		}
-		else if (v->pids[v->phil_id] == SUCCESS)
-			death_monitor(v);
-		else
-			usleep(TIME_DELAY);
 	}
 	return (SUCCESS);
 }
@@ -94,14 +92,14 @@ int	check_args(t_var *v, int argc, char **argv)
 	v->phnu = ft_atoi(argv[1]);
 	if (v->phnu < 1 || v->phnu > 200)
 		return (msg_bad_arguments(ERROR));
-	v->time_to_die = ft_atoi(argv[2]);
-	if (v->time_to_die < 60)
+	v->time_to_die = ft_atoi(argv[2]) * 1000;
+	if (v->time_to_die < 60000)
 		return (msg_bad_arguments(ERROR));
-	v->time_to_eat = ft_atoi(argv[3]);
-	if (v->time_to_eat < 60)
+	v->time_to_eat = ft_atoi(argv[3]) * 1000;
+	if (v->time_to_eat < 60000)
 		return (msg_bad_arguments(ERROR));
-	v->time_to_sleep = ft_atoi(argv[4]);
-	if (v->time_to_sleep < 60)
+	v->time_to_sleep = ft_atoi(argv[4]) * 1000;
+	if (v->time_to_sleep < 60000)
 		return (msg_bad_arguments(ERROR));
 	v->num_of_times_each_phil_must_eat = INT_MAX;
 	if (argc == 6)

@@ -36,14 +36,12 @@ void	*philosopher(t_var *v)
 
 int	take_forks(t_var *v)
 {
-	time_t	time_start_bifurcate;
+	time_t	time_start_tforks;
 
-	time_start_bifurcate = getime(v->time_start);
+	time_start_tforks = getime(v->time_start);
 	if (v->phnu == 1)
 	{
-		print_msg(time_start_bifurcate, v, MSG_TAKEN_FORK, YELLOW);
-		while (getime(v->time_start) - time_start_bifurcate <= v->time_to_die)
-			usleep(TIME_DELAY);
+		phil_timer(v->time_start, time_start_tforks, v->time_to_die);
 		return (ERROR);
 	}
 	sem_wait(v->sem_garcon_no2);
@@ -55,30 +53,25 @@ int	take_forks(t_var *v)
 
 int	eating(t_var *v)
 {
+	time_t	time_start_eat;
+	
 	sem_wait(v->sem_monitor);
-	v->time_start_eat = getime(v->time_start);
-	if (v->time_start_eat - v->time_last_ate < v->time_to_die)
+	time_start_eat = getime(v->time_start);
+	if ((time_start_eat - v->time_last_ate) / FIND_TIMEDEATH_PRECSN <= \
+										v->time_to_die / FIND_TIMEDEATH_PRECSN)
 	{
-		v->time_last_ate = v->time_start_eat;
+		v->time_last_ate = time_start_eat;
+		if (v->eat_counter == INT_MAX)
+			v->eat_counter = 0;
 		sem_post(v->sem_monitor);
-		print_msg(v->time_start_eat, v, MSG_EATING, GREEN);
+		print_msg(time_start_eat, v, MSG_EATING, GREEN);
 	}
 	else
 	{
 		sem_post(v->sem_monitor);
 		return (ERROR);
 	}
-	while (getime(v->time_start) - v->time_start_eat < v->time_to_eat)
-		usleep(TIME_DELAY);
-	sem_wait(v->sem_monitor);
-	if (++v->eat_counter == v->num_of_times_each_phil_must_eat)
-	{
-		sem_post(v->sem_monitor);
-		return (ERROR);
-	}
-	else if (v->eat_counter == INT_MAX)
-		v->eat_counter = 0;
-	sem_post(v->sem_monitor);
+	phil_timer(v->time_start, time_start_eat, v->time_to_eat);
 	return (SUCCESS);
 }
 
@@ -95,12 +88,6 @@ int	sleeping(t_var *v)
 
 	time_start_sleep = getime(v->time_start);
 	print_msg(time_start_sleep, v, MSG_SLEEPING, GRAY);
-	while (getime(v->time_start) - time_start_sleep <= v->time_to_sleep)
-	{
-		if (v->time_start_eat - v->time_last_ate < v->time_to_die)
-			usleep(TIME_DELAY);
-		else
-			return (ERROR);
-	}
+	phil_timer(v->time_start, time_start_sleep, v->time_to_sleep);
 	return (SUCCESS);
 }
