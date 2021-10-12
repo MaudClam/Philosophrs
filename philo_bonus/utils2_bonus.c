@@ -69,6 +69,7 @@ int	free_mem(t_var *v, int err)
 	sem_unlink(SEM_FORKS);
 	sem_unlink(SEM_GARCON);
 	sem_unlink(SEM_STDOUT);
+	usleep(MONITORING_INTERVAL);
 	return (err);
 }
 
