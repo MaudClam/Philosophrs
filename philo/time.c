@@ -47,7 +47,7 @@ void	phil_timer(time_t time_start_game, time_t t1, time_t dt)
 	t2 = getime(time_start_game);
 	usleep((useconds_t)(dt - (t2 - t1)) / 10 * 8);
 	t2 = getime(time_start_game);
-	while (t2 - t1 < dt - PHIL_TIMER_PRECISION)
+	while (t2 - t1 < dt)
 	{
 		usleep(PHIL_TIMER_PRECISION);
 		t2 = getime(time_start_game);
