@@ -66,7 +66,6 @@ int	sem_monitor(t_var *v, char mode)
 		{
 			errmsg("sem_open() error in sem_monitor()", errno);
 			free(v->sem_monitor_name);
-			usleep(MONITORING_INTERVAL);
 			return (ERROR);
 		}
 	}
@@ -77,6 +76,7 @@ int	sem_monitor(t_var *v, char mode)
 			errmsg("v->sem_monitor is not a valid semaphore descriptor", errno);
 		sem_unlink(v->sem_monitor_name);
 		free(v->sem_monitor_name);
+		usleep(MONITORING_INTERVAL);
 		v->sem_monitor_name = NULL;
 	}
 	return (SUCCESS);
