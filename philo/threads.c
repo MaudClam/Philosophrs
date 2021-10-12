@@ -114,7 +114,7 @@ int	start_threads(t_var *v, t_phil **phil)
 			return (ERROR);
 		}
 		i++;
-		usleep(TIME_DELAY);
+//		usleep(TIME_DELAY);
 	}
 	detach_threads(v, phil, v->phnu);
 	death_monitor(v, phil);
