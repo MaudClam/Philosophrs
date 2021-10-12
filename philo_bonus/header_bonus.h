@@ -31,7 +31,7 @@
 # endif
 
 # ifndef PHIL_TIMER_PRECISION
-#  define PHIL_TIMER_PRECISION 	200
+#  define PHIL_TIMER_PRECISION 	100
 # endif
 
 # ifndef MONITORING_INTERVAL
