@@ -33,6 +33,7 @@ void	death_monitor(t_var *v)
 		{
 			sem_post(v->sem_monitor);
 			death(v);
+			sem_monitor(v, CLOSE);
 			exit(free_mem(v, EXIT_FAILURE));
 		}
 		sem_post(v->sem_monitor);
@@ -65,7 +66,7 @@ int	sem_monitor(t_var *v, char mode)
 		{
 			errmsg("sem_open() error in sem_monitor()", errno);
 			free(v->sem_monitor_name);
-			v->sem_monitor_name = NULL;
+			usleep(MONITORING_INTERVAL);
 			return (ERROR);
 		}
 	}
@@ -96,7 +97,6 @@ void	death(t_var *v)
 		sem_wait(v->sem_monitor);
 	}
 	sem_post(v->sem_monitor);
-	sem_monitor(v, CLOSE);
 }
 
 void	kill_phill(t_var *v, int signal)
