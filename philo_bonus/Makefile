@@ -15,6 +15,7 @@ NAME =		philo_bonus
 SRCS =		main_bonus.c \
 			philo_bonus.c \
 			philo1_bonus.c \
+			time_bonus.c \
 			utils1_bonus.c \
 			utils2_bonus.c
 			

@@ -33,13 +33,13 @@ For more details: https://profile.intra.42.fr/searches\n\n", STDOUT_FILENO);
 
 void	print_msg(time_t time, t_var *v, char *msg, char *color)
 {
-	if (getime(v->time_start) - v->time_last_ate < v->time_to_die)
+	if (time - v->time_last_ate <= v->time_to_die)
 	{
 		sem_wait(v->sem_stdout);
+		ft_putstr_fd(color, STDOUT_FILENO);
 		ft_putnbr_fd((int)time / 1000, STDOUT_FILENO);
 		ft_putchar_fd(' ', STDOUT_FILENO);
 		ft_putnbr_fd(v->phil_id, STDOUT_FILENO);
-		ft_putstr_fd(color, STDOUT_FILENO);
 		ft_putstr_fd(msg, STDOUT_FILENO);
 		ft_putstr_fd(DEFAULT, STDOUT_FILENO);
 		sem_post(v->sem_stdout);
@@ -67,7 +67,7 @@ int	free_mem(t_var *v, int err)
 	if (v->sem_stdout && sem_close(v->sem_stdout) == EINVAL)
 		errmsg("v->sem_stdout is not a valid semaphore descriptor", errno);
 	sem_unlink(SEM_FORKS);
-	sem_unlink(SEM_GARCON );
+	sem_unlink(SEM_GARCON);
 	sem_unlink(SEM_STDOUT);
 	return (err);
 }

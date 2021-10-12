@@ -28,7 +28,7 @@ void	death_monitor(t_var *v)
 			sem_monitor(v, CLOSE);
 			exit(free_mem(v, EXIT_SUCCESS));
 		}
-		else if ((getime(v->time_start) - v->time_last_ate) /
+		else if ((getime(v->time_start) - v->time_last_ate) / \
 				 FIND_TIMEDEATH_PRECSN > v->time_to_die / FIND_TIMEDEATH_PRECSN)
 		{
 			sem_post(v->sem_monitor);

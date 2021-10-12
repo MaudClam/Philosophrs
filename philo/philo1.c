@@ -55,8 +55,7 @@ void	it_is_death(time_t time, t_phil *phil)
 void	print_msg(time_t time, t_phil *phil, char *msg)
 {
 	if (phil->v->num_of_times_each_phil_must_eat != 0 && \
-	getime(phil->v->time_start_game) - phil->time_last_ate < \
-														phil->v->time_to_die)
+		time - phil->time_last_ate <= phil->v->time_to_die)
 	{
 		pthread_mutex_lock(&phil->v->mutex_stdout);
 		ft_putnbr_fd((int)(time / 1000), STDOUT_FILENO);

@@ -59,11 +59,11 @@
 # define GRAY					"\033[37m"
 # define TURQUOISE				"\033[36m"
 # define RED					"\033[31m"
-# define MSG_TAKEN_FORK			"has taken a fork\n"
-# define MSG_EATING				"is eating\n"
-# define MSG_SLEEPING			"is sleeping\n"
-# define MSG_THINKING			"is thinking\n"
-# define MSG_DIED				"is died\n"
+# define MSG_TAKEN_FORK			" has taken a fork\n"
+# define MSG_EATING				" is eating\n"
+# define MSG_SLEEPING			" is sleeping\n"
+# define MSG_THINKING			" is thinking\n"
+# define MSG_DIED				" is died\n"
 # define MSG_GAME_OVER			"====GAME OVER!====\n"
 
 typedef struct s_var
@@ -106,9 +106,9 @@ int		sleeping(t_var *v);
 /*
 **		philo1_bonus.c
 */
+void	death_monitor(t_var *v);
 void	start_thread(t_var *v);
 int		sem_monitor(t_var *v, char mode);
-void	death_monitor(t_var *v);
 void	death(t_var *v);
 void	kill_phill(t_var *v, int signal);
 /*

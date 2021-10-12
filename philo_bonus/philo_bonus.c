@@ -54,14 +54,14 @@ int	take_forks(t_var *v)
 int	eating(t_var *v)
 {
 	time_t	time_start_eat;
-	
+
 	sem_wait(v->sem_monitor);
 	time_start_eat = getime(v->time_start);
 	if ((time_start_eat - v->time_last_ate) / FIND_TIMEDEATH_PRECSN <= \
 										v->time_to_die / FIND_TIMEDEATH_PRECSN)
 	{
 		v->time_last_ate = time_start_eat;
-		if (v->eat_counter == INT_MAX)
+		if (++v->eat_counter == INT_MAX)
 			v->eat_counter = 0;
 		sem_post(v->sem_monitor);
 		print_msg(time_start_eat, v, MSG_EATING, GREEN);
