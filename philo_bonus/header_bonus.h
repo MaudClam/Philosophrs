@@ -51,6 +51,7 @@
 # define CLOSE					0
 # define SEM_FORKS				"/forks"
 # define SEM_GARCON				"/garcon_no2"
+# define SEM_FIFO				"/fifo"
 # define SEM_STDOUT				"/stdout"
 # define SEM_MONITOR			"/monitor_"
 # define DEFAULT				"\033[0m"
@@ -78,6 +79,7 @@ typedef struct s_var
 	int			status;
 	sem_t		*sem_forks;
 	sem_t		*sem_garcon_no2;
+	sem_t		*sem_fifo;
 	sem_t		*sem_stdout;
 	sem_t		*sem_monitor;
 	char		*sem_monitor_name;

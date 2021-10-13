@@ -64,9 +64,12 @@ int	free_mem(t_var *v, int err)
 		errmsg("v->sem_forks is not a valid semaphore descriptor", errno);
 	if (v->sem_garcon_no2 && sem_close(v->sem_garcon_no2) == EINVAL)
 		errmsg("v->sem_garcon_no2 is not a valid semaphore descriptor", errno);
+	if (v->sem_fifo && sem_close(v->sem_fifo) == EINVAL)
+		errmsg("v->sem_fifo is not a valid semaphore descriptor", errno);
 	if (v->sem_stdout && sem_close(v->sem_stdout) == EINVAL)
 		errmsg("v->sem_stdout is not a valid semaphore descriptor", errno);
 	sem_unlink(SEM_FORKS);
+	sem_unlink(SEM_FIFO);
 	sem_unlink(SEM_GARCON);
 	sem_unlink(SEM_STDOUT);
 	usleep(MONITORING_INTERVAL);

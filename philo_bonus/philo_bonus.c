@@ -44,6 +44,7 @@ int	take_forks(t_var *v)
 		phil_timer(v->time_start, time_start_tforks, v->time_to_die);
 		return (ERROR);
 	}
+	sem_wait(v->sem_fifo);
 	sem_wait(v->sem_garcon_no2);
 	sem_wait(v->sem_forks);
 	print_msg(getime(v->time_start), v, MSG_TAKEN_FORK, YELLOW);
@@ -80,6 +81,7 @@ void	put_forks(t_var *v)
 	sem_post(v->sem_forks);
 	sem_post(v->sem_forks);
 	sem_post(v->sem_garcon_no2);
+	sem_post(v->sem_fifo);
 }
 
 int	sleeping(t_var *v)

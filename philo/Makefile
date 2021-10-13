@@ -27,7 +27,7 @@ HEADER = 	header.h
 
 CC =		gcc
 
-CFLAGS =	-Wall -Wextra -Werror -pthread -O3
+CFLAGS =	-Wall -Wextra -Werror -pthread
 
 # The test flag is taken from the command line, for example:
 # make re TEST="-D TIME_DELAY=100"
