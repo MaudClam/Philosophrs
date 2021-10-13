@@ -75,6 +75,14 @@ int	open_semaphores(t_var *v)
 		v->sem_fifo = NULL;
 		return (ERROR);
 	}
+	sem_unlink(SEM_GARCON);
+	v->sem_garcon_no2 = sem_open(SEM_GARCON, O_CREAT, S_IRWXU, v->phnu / 2);
+	if (v->sem_garcon_no2 == SEM_FAILED)
+	{
+		errmsg("sem_open() error", errno);
+		v->sem_garcon_no2 = NULL;
+		return (ERROR);
+	}
 	sem_unlink(SEM_STDOUT);
 	v->sem_stdout = sem_open(SEM_STDOUT, O_CREAT, S_IRWXU, 1);
 	if (v->sem_stdout == SEM_FAILED)
