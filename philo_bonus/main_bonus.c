@@ -52,6 +52,7 @@ int	start_processes(t_var *v)
 			kill_phill(v, SIGKILL);
 			return (ERROR);
 		}
+		usleep(MONITORING_INTERVAL);
 	}
 	return (SUCCESS);
 }

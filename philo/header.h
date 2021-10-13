@@ -27,7 +27,7 @@
 # endif
 
 # ifndef TIME_DELAY
-#  define TIME_DELAY 			200
+#  define TIME_DELAY 			50
 # endif
 
 # ifndef PHIL_TIMER_PRECISION
