@@ -47,7 +47,7 @@ void	start_thread(t_var *v)
 		exit(free_mem(v, EXIT_FAILURE));
 	sem_wait(v->sem_stdout);
 	v->time_start = getime(0);
-//	usleep(v->phil_id * TIME_DELAY);
+	usleep(v->phil_id * TIME_DELAY);
 	if (pthread_create(&v->th, NULL, (void *)&philosopher, v) != SUCCESS)
 		exit(free_mem(v, errmsg("failed to create thread", errno)));
 	pthread_detach(v->th);
@@ -105,7 +105,7 @@ void	kill_phill(t_var *v, int signal)
 	i = 1;
 	while (i <= v->phnu)
 	{
-		usleep(TIME_DELAY);
+		usleep(MONITORING_INTERVAL);
 		if (v->pids[i] > 1)
 		{
 			kill(v->pids[i], signal);
