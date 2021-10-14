@@ -54,6 +54,29 @@ void	phil_timer(time_t time_start_game, time_t t1, time_t dt)
 	}
 }
 
+int	one_semaphore(sem_t *sem, char *name, int volume)
+{
+	if (volume != CLOSE)
+	{
+		sem_unlink(name);
+		sem = sem_open(name, O_CREAT, S_IRWXU, volume);
+		if (sem == SEM_FAILED)
+		{
+			errmsg("sem_open error in open_close_semaphore()", errno);
+			sem = NULL;
+			return (ERROR);
+		}
+	}
+	else
+	{
+		if (sem && sem_close(sem) == EINVAL)
+			errmsg("not valid semaphore descriptor in open_close_semaphore()", \
+																		errno);
+		sem_unlink(name);
+	}
+	return (SUCCESS);
+}
+
 char	*indexname(char const *name, int index)
 {
 	char	*str;
