@@ -46,6 +46,7 @@ int	take_forks(t_var *v)
 	}
 	sem_wait(v->sem_garcon_no2);
 	sem_wait(v->sem_forks);
+	print_msg(getime(v->time_start), v, MSG_TAKEN_FORK, YELLOW);
 	sem_wait(v->sem_forks);
 	sem_post(v->sem_garcon_no2);
 	return (SUCCESS);
