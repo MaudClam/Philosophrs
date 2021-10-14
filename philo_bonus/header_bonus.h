@@ -35,11 +35,11 @@
 # endif
 
 # ifndef MONITORING_INTERVAL
-#  define MONITORING_INTERVAL 	5000
+#  define MONITORING_INTERVAL 	1000
 # endif
 
 # ifndef FIND_TIMEDEATH_PRECSN
-#  define FIND_TIMEDEATH_PRECSN	5000
+#  define FIND_TIMEDEATH_PRECSN	1000
 # endif
 
 # define START_COUNTING			0
@@ -79,7 +79,6 @@ typedef struct s_var
 	int			status;
 	sem_t		*sem_forks;
 	sem_t		*sem_garcon_no2;
-	sem_t		*sem_fifo;
 	sem_t		*sem_stdout;
 	sem_t		*sem_monitor;
 	char		*sem_monitor_name;

@@ -45,9 +45,8 @@ void	start_thread(t_var *v)
 {
 	if (sem_monitor(v, OPEN) == ERROR)
 		exit(free_mem(v, EXIT_FAILURE));
-	sem_wait(v->sem_stdout);
+	sem_wait(v->sem_garcon_no2);
 	v->time_start = getime(0);
-	usleep(v->phil_id * TIME_DELAY);
 	if (pthread_create(&v->th, NULL, (void *)&philosopher, v) != SUCCESS)
 		exit(free_mem(v, errmsg("failed to create thread", errno)));
 	pthread_detach(v->th);
@@ -83,11 +82,20 @@ int	sem_monitor(t_var *v, char mode)
 
 void	death(t_var *v)
 {
+	int	i;
+
+	i = 0;
 	sem_wait(v->sem_stdout);
+	ft_putstr_fd(RED, STDOUT_FILENO);
 	ft_putnbr_fd((int)(getime(v->time_start) / 1000), STDOUT_FILENO);
 	ft_putchar_fd(' ', STDOUT_FILENO);
 	ft_putnbr_fd(v->phil_id, STDOUT_FILENO);
-	ft_putstr_fd(RED MSG_DIED DEFAULT, STDOUT_FILENO);
+	ft_putstr_fd(MSG_DIED DEFAULT, STDOUT_FILENO);
+	while (i++ <= v->phnu)
+	{
+		sem_post(v->sem_garcon_no2);
+		sem_post(v->sem_forks);
+	}
 	sem_wait(v->sem_monitor);
 	while (v->thread_compltd != TRUE)
 	{

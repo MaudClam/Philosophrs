@@ -63,7 +63,7 @@ int	one_semaphore(sem_t **sem, char *name, int volume)
 		if (*sem == SEM_FAILED)
 		{
 			errmsg("sem_open error in open_close_semaphore()", errno);
-			sem = NULL;
+			*sem = NULL;
 			return (ERROR);
 		}
 	}

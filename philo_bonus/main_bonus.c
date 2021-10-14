@@ -18,7 +18,7 @@ int	wait_phils_signals(t_var *v)
 
 	i = 0;
 	while (i++ <= v->phnu)
-		sem_post(v->sem_stdout);
+		sem_post(v->sem_garcon_no2);
 	i = 0;
 	while (i < v->phnu)
 	{
@@ -40,7 +40,7 @@ int	wait_phils_signals(t_var *v)
 
 int	start_processes(t_var *v)
 {
-	sem_wait(v->sem_stdout);
+	sem_wait(v->sem_garcon_no2);
 	while (v->phil_id++ < v->phnu)
 	{
 		v->pids[v->phil_id] = fork();
@@ -63,11 +63,7 @@ int	semaphores(t_var *v, int mode)
 	{
 		if (one_semaphore(&v->sem_forks, SEM_FORKS, v->phnu) == ERROR)
 			return (ERROR);
-		if (one_semaphore(&v->sem_garcon_no2, SEM_GARCON, \
-														v->phnu / 2) == ERROR)
-			return (ERROR);
-		if (one_semaphore(&v->sem_fifo, SEM_FIFO, \
-												v->phnu - v->phnu / 2) == ERROR)
+		if (one_semaphore(&v->sem_garcon_no2, SEM_GARCON, 1) == ERROR)
 			return (ERROR);
 		if (one_semaphore(&v->sem_stdout, SEM_STDOUT, 1) == ERROR)
 			return (ERROR);
@@ -75,7 +71,6 @@ int	semaphores(t_var *v, int mode)
 	else
 	{
 		one_semaphore(&v->sem_stdout, SEM_STDOUT, CLOSE);
-		one_semaphore(&v->sem_fifo, SEM_FIFO, CLOSE);
 		one_semaphore(&v->sem_garcon_no2, SEM_GARCON, CLOSE);
 		one_semaphore(&v->sem_forks, SEM_FORKS, CLOSE);
 	}
