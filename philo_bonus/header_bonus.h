@@ -94,7 +94,7 @@ typedef struct s_var
 **		main_bonus.c
 */
 int		check_args(t_var *v, int argc, char **argv);
-int		semaphores(t_var *v, char mode);
+int		semaphores(t_var *v, int mode);
 int		start_processes(t_var *v);
 int		wait_phils_signals(t_var *v);
 /*
@@ -119,7 +119,7 @@ void	kill_phill(t_var *v, int signal);
 time_t	getime(time_t start);
 void	timer(useconds_t dt);
 void	phil_timer(time_t time_start_game, time_t t1, time_t dt);
-int		one_semaphore(sem_t *sem, char *name, int volume);
+int		one_semaphore(sem_t **sem, char *name, int volume);
 char	*indexname(char const *name, int index);
 /*
 **		utils1_bonus.c

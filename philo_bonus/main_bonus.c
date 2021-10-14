@@ -57,27 +57,27 @@ int	start_processes(t_var *v)
 	return (SUCCESS);
 }
 
-int	semaphores(t_var *v, char mode)
+int	semaphores(t_var *v, int mode)
 {
 	if (mode != CLOSE)
 	{
-		if (one_semaphore(v->sem_forks, SEM_FORKS, v->phnu) == ERROR)
+		if (one_semaphore(&v->sem_forks, SEM_FORKS, v->phnu) == ERROR)
 			return (ERROR);
-		if (one_semaphore(v->sem_garcon_no2, SEM_GARCON, \
+		if (one_semaphore(&v->sem_garcon_no2, SEM_GARCON, \
 														v->phnu / 2) == ERROR)
 			return (ERROR);
-		if (one_semaphore(v->sem_fifo, SEM_FIFO, \
+		if (one_semaphore(&v->sem_fifo, SEM_FIFO, \
 												v->phnu - v->phnu / 2) == ERROR)
 			return (ERROR);
-		if (one_semaphore(v->sem_stdout, SEM_STDOUT, 1) == ERROR)
+		if (one_semaphore(&v->sem_stdout, SEM_STDOUT, 1) == ERROR)
 			return (ERROR);
 	}
 	else
 	{
-		one_semaphore(v->sem_stdout, SEM_STDOUT, CLOSE);
-		one_semaphore(v->sem_fifo, SEM_FIFO, CLOSE);
-		one_semaphore(v->sem_garcon_no2, SEM_GARCON, CLOSE);
-		one_semaphore(v->sem_forks, SEM_FORKS, CLOSE);
+		one_semaphore(&v->sem_stdout, SEM_STDOUT, CLOSE);
+		one_semaphore(&v->sem_fifo, SEM_FIFO, CLOSE);
+		one_semaphore(&v->sem_garcon_no2, SEM_GARCON, CLOSE);
+		one_semaphore(&v->sem_forks, SEM_FORKS, CLOSE);
 	}
 	return (SUCCESS);
 }
