@@ -26,7 +26,6 @@ void	*philosopher(t_var *v)
 		put_forks(v);
 		if (sleeping(v) != SUCCESS)
 			break ;
-		print_msg(getime(v->time_start), v, MSG_THINKING, TURQUOISE);
 	}
 	sem_wait(v->sem_monitor);
 	v->thread_compltd = TRUE;
@@ -89,5 +88,6 @@ int	sleeping(t_var *v)
 	time_start_sleep = getime(v->time_start);
 	print_msg(time_start_sleep, v, MSG_SLEEPING, GRAY);
 	phil_timer(v->time_start, time_start_sleep, v->time_to_sleep);
+	print_msg(getime(v->time_start), v, MSG_THINKING, TURQUOISE);
 	return (SUCCESS);
 }

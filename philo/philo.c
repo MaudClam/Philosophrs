@@ -25,7 +25,6 @@ void	*philosopher(t_phil *phil)
 		}
 		put_forks(phil);
 		sleeping(phil);
-		print_msg(getime(phil->v->time_start_game), phil, MSG_THINKING);
 	}
 	pthread_mutex_lock(&phil->mutex_t_eat);
 	phil->thread_compltd = TRUE;
@@ -105,4 +104,5 @@ void	sleeping(t_phil *phil)
 	t_start_sleep = getime(phil->v->time_start_game);
 	print_msg(t_start_sleep, phil, MSG_SLEEPING);
 	phil_timer(phil->v->time_start_game, t_start_sleep, phil->v->time_to_sleep);
+	print_msg(getime(phil->v->time_start_game), phil, MSG_THINKING);
 }
