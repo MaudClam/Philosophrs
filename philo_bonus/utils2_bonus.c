@@ -33,7 +33,7 @@ For more details: https://profile.intra.42.fr/searches\n\n", STDOUT_FILENO);
 
 void	print_msg(time_t time, t_var *v, char *msg, char *color)
 {
-	if ((time - v->time_last_ate) /  FIND_TIMEDEATH_PRECSN <= \
+	if ((time - v->time_last_ate) / FIND_TIMEDEATH_PRECSN <= \
 										v->time_to_die / FIND_TIMEDEATH_PRECSN)
 	{
 		sem_wait(v->sem_stdout);
